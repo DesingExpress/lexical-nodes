@@ -6,7 +6,7 @@
  *
  */
 
-import "./style.css";
+import "../style.css";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -18,6 +18,9 @@ import { $isTextNode, isHTMLElement, ParagraphNode, TextNode } from "lexical";
 import { parseAllowedColor, parseAllowedFontSize } from "./styleConfig";
 import lexicalTheme from "./theme";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import defaultNodes from "./nodes";
+import { MarkdownShortcutPlugin } from "./plugins/test";
 
 const placeholder = "Enter some rich text...";
 
@@ -117,7 +120,7 @@ const editorConfig = {
     import: constructImportMap(),
   },
   namespace: "React.js Demo",
-  nodes: [ParagraphNode, TextNode],
+  nodes: [...defaultNodes],
   onError(error) {
     throw error;
   },
@@ -144,6 +147,8 @@ export default function Editor() {
           />
           <HistoryPlugin />
           <AutoFocusPlugin />
+          <ListPlugin />
+          <MarkdownShortcutPlugin />
         </div>
       </div>
     </LexicalComposer>
