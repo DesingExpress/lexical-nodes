@@ -18,6 +18,9 @@ import { $isTextNode, isHTMLElement, ParagraphNode, TextNode } from "lexical";
 import { parseAllowedColor, parseAllowedFontSize } from "./styleConfig";
 import lexicalTheme from "./theme";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
+import { useState } from "react";
+import OnChangePlugin from "./plugins/OnChangePlugin";
+import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 
 const placeholder = "Enter some rich text...";
 
@@ -118,13 +121,22 @@ const editorConfig = {
   },
   namespace: "React.js Demo",
   nodes: [ParagraphNode, TextNode],
+  theme: lexicalTheme,
   onError(error) {
     throw error;
   },
-  theme: lexicalTheme,
 };
 
-export default function Editor() {
+export default function Editor({ editorRef }) {
+  const [editorState, setEditorState] = useState();
+
+  function onChange(editorState) {
+    const editorStateJSON = editorState.toJSON();
+    setEditorState(JSON.stringify(editorStateJSON));
+  }
+
+  console.log(editorState);
+
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="editor-container">
@@ -142,8 +154,10 @@ export default function Editor() {
             }
             ErrorBoundary={LexicalErrorBoundary}
           />
+          <OnChangePlugin onChange={onChange} />
           <HistoryPlugin />
           <AutoFocusPlugin />
+          <EditorRefPlugin editorRef={editorRef} />
         </div>
       </div>
     </LexicalComposer>
