@@ -8,7 +8,10 @@
     "build"
   ],
   "dependencies": {
-    "@design-express/node-scripts": "1.2.5"
+    "@design-express/node-scripts": "1.2.5",
+    "@lexical/react": "^0.23.1",
+    "@lexical/utils": "^0.23.1",
+    "lexical": "^0.23.1"
   },
   "scripts": {
     "start": "node-scripts start",
