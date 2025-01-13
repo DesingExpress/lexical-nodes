@@ -8,7 +8,7 @@
     "build"
   ],
   "dependencies": {
-    "@design-express/node-scripts": "1.2.5",
+    "@design-express/node-scripts": "^1.2.6",
     "@lexical/react": "^0.23.1",
     "@lexical/utils": "^0.23.1",
     "install": "^0.13.0",
@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "tsc-watch --onSuccess \"node-scripts start\"",
-    "build": "node-scripts build",
+    "build": "tsc -p .&&node-scripts build",
     "pack": "node-scripts pack",
     "publish": "node-scripts publish",
     "docs": "node-scripts docs",
@@ -36,6 +36,8 @@
     "@mui/icons-material": "^5.16.14",
     "@mui/material": "^5.16.14",
     "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "sass": "^1.83.1",
     "tsc-watch": "^6.2.1",
     "typescript": "^5.7.3"
   },
