@@ -24,6 +24,8 @@ import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import defaultNodes from "./nodes";
 import { MarkdownShortcutPlugin } from "./plugins/test";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import InitPlugin from "./plugins/InitPlugin";
 
 const placeholder = "Enter some rich text...";
 
@@ -132,19 +134,27 @@ const editorConfig = {
 
 export default function Editor({ editorRef }) {
   const [editorState, setEditorState] = useState();
+  const [titleNode, setTitleNode] = useState();
 
   function onChange(editorState) {
     const editorStateJSON = editorState.toJSON();
     setEditorState(JSON.stringify(editorStateJSON));
+
+    const textNodes = Array.from(editorState._nodeMap.values()).filter(
+      (node) => node.__type === "text"
+    );
+    const titleNode = textNodes[0]?.__text ?? null;
+    setTitleNode(titleNode);
   }
 
-  console.log(editorState);
+  console.log(titleNode);
 
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="editor-container">
         <ToolbarPlugin />
         <div className="editor-inner">
+          {/* <InitPlugin /> */}
           <RichTextPlugin
             contentEditable={
               <ContentEditable
