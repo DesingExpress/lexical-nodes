@@ -11,10 +11,11 @@
     "@design-express/node-scripts": "1.2.5",
     "@lexical/react": "^0.23.1",
     "@lexical/utils": "^0.23.1",
+    "install": "^0.13.0",
     "lexical": "^0.23.1"
   },
   "scripts": {
-    "start": "node-scripts start",
+    "start": "tsc-watch --onSuccess \"node-scripts start\"",
     "build": "node-scripts build",
     "pack": "node-scripts pack",
     "publish": "node-scripts publish",
@@ -34,7 +35,9 @@
     "@design-express/fabrica": "^1.0.1",
     "@mui/icons-material": "^5.16.14",
     "@mui/material": "^5.16.14",
-    "@types/react": "^18.3.18"
+    "@types/react": "^18.3.18",
+    "tsc-watch": "^6.2.1",
+    "typescript": "^5.7.3"
   },
   "browserslist": {
     "production": [
