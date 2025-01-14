@@ -18,14 +18,14 @@ import { $isTextNode, isHTMLElement, ParagraphNode, TextNode } from "lexical";
 import { parseAllowedColor, parseAllowedFontSize } from "./styleConfig";
 import lexicalTheme from "./theme";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OnChangePlugin from "./plugins/OnChangePlugin";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import defaultNodes from "./nodes";
 import { MarkdownShortcutPlugin } from "./plugins/test";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import InitPlugin from "./plugins/InitPlugin";
+import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 
 const placeholder = "Enter some rich text...";
 
@@ -133,13 +133,17 @@ const editorConfig = {
 };
 
 export default function Editor({ editorRef }) {
+  const [isModified, setModified] = useState(false);
   const [editorState, setEditorState] = useState();
   const [titleNode, setTitleNode] = useState();
 
   function onChange(editorState) {
+    setModified(false);
+
     const editorStateJSON = editorState.toJSON();
     setEditorState(JSON.stringify(editorStateJSON));
 
+    // 현재 첫번째줄 textNode가 제목으로 추출(추후 #태그가 붙는 문자열을 제목으로 추출해야함)
     const textNodes = Array.from(editorState._nodeMap.values()).filter(
       (node) => node.__type === "text"
     );
@@ -149,12 +153,27 @@ export default function Editor({ editorRef }) {
 
   console.log(titleNode);
 
+  // 사용자의 입력이 멈추고 3초 후 isModified를 true로 설정
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setModified(true);
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [editorState]);
+
+  // isModified가 true가 되면 auto save
+  useEffect(() => {
+    if (isModified && titleNode !== "" && editorState !== "") {
+      // Save function
+    }
+  }, [isModified]);
+
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="editor-container">
         <ToolbarPlugin />
         <div className="editor-inner">
-          {/* <InitPlugin /> */}
           <RichTextPlugin
             contentEditable={
               <ContentEditable
@@ -170,9 +189,11 @@ export default function Editor({ editorRef }) {
           <OnChangePlugin onChange={onChange} />
           <HistoryPlugin />
           <AutoFocusPlugin />
-          <EditorRefPlugin editorRef={editorRef} />
+          <TablePlugin />
+          <TabIndentationPlugin />
           <ListPlugin />
           <MarkdownShortcutPlugin />
+          <EditorRefPlugin editorRef={editorRef} />
         </div>
       </div>
     </LexicalComposer>
