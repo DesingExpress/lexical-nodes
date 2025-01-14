@@ -14,6 +14,8 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
+
 // import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { $isTextNode, isHTMLElement, ParagraphNode, TextNode } from "lexical";
 
@@ -171,6 +173,7 @@ function Editor() {
             <ListPlugin />
             <MarkdownShortcutPlugin plugins={[EQUATION]} />
             <EquationsPlugin />
+            <HorizontalRulePlugin />
             {floatingAnchorElem && (
               <>
                 <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
