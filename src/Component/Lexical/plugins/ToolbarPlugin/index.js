@@ -70,7 +70,6 @@ import { InsertInlineImageDialog } from "../InlineImagePlugin";
 // import { InsertPollDialog } from "../PollPlugin";
 import { SHORTCUTS } from "../ShortcutsPlugin/shortcuts";
 // import { InsertTableDialog } from "../TablePlugin";
-import FontSize from "./fontSize";
 import {
   clearFormatting,
   formatBulletList,
@@ -90,6 +89,7 @@ import FormatItalicIcon from "@mui/icons-material/FormatItalic";
 import FormatUnderlinedIcon from "@mui/icons-material/FormatUnderlined";
 import CodeIcon from "@mui/icons-material/Code";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
+import AddIcon from "@mui/icons-material/Add";
 import { ReactComponent as LowercaseIcon } from "../../../images/icons/type-lowercase.svg";
 import { ReactComponent as H1Icon } from "../../../images/icons/type-h1.svg";
 import { ReactComponent as H2Icon } from "../../../images/icons/type-h2.svg";
@@ -98,81 +98,6 @@ import { ReactComponent as H4Icon } from "../../../images/icons/type-h4.svg";
 import { ReactComponent as H5Icon } from "../../../images/icons/type-h5.svg";
 import { ReactComponent as H6Icon } from "../../../images/icons/type-h6.svg";
 import { ReactComponent as ParagraphIcon } from "../../../images/icons/text-paragraph.svg";
-
-// const rootTypeToRootName = {
-//   root: "Root",
-//   table: "Table",
-// };
-
-function getCodeLanguageOptions() {
-  const options = [];
-
-  // for (const [lang, friendlyName] of Object.entries(
-  //   CODE_LANGUAGE_FRIENDLY_NAME_MAP
-  // )) {
-  //   options.push([lang, friendlyName]);
-  // }
-
-  return options;
-}
-
-const CODE_LANGUAGE_OPTIONS = getCodeLanguageOptions();
-
-const FONT_FAMILY_OPTIONS = [
-  ["Arial", "Arial"],
-  ["Courier New", "Courier New"],
-  ["Georgia", "Georgia"],
-  ["Times New Roman", "Times New Roman"],
-  ["Trebuchet MS", "Trebuchet MS"],
-  ["Verdana", "Verdana"],
-];
-
-const FONT_SIZE_OPTIONS = [
-  ["10px", "10px"],
-  ["11px", "11px"],
-  ["12px", "12px"],
-  ["13px", "13px"],
-  ["14px", "14px"],
-  ["15px", "15px"],
-  ["16px", "16px"],
-  ["17px", "17px"],
-  ["18px", "18px"],
-  ["19px", "19px"],
-  ["20px", "20px"],
-];
-
-const ELEMENT_FORMAT_OPTIONS = {
-  center: {
-    icon: "center-align",
-    iconRTL: "center-align",
-    name: "Center Align",
-  },
-  end: {
-    icon: "right-align",
-    iconRTL: "left-align",
-    name: "End Align",
-  },
-  justify: {
-    icon: "justify-align",
-    iconRTL: "justify-align",
-    name: "Justify Align",
-  },
-  left: {
-    icon: "left-align",
-    iconRTL: "left-align",
-    name: "Left Align",
-  },
-  right: {
-    icon: "right-align",
-    iconRTL: "right-align",
-    name: "Right Align",
-  },
-  start: {
-    icon: "left-align",
-    iconRTL: "right-align",
-    name: "Start Align",
-  },
-};
 
 function dropDownActiveClass(active) {
   if (active) {
@@ -310,175 +235,137 @@ function BlockFormatDropDown({
   );
 }
 
+function InsertDropdown({ disabled, editor, showModal }) {
+  const [isOpen, setOpen] = useState(false);
+  function handleClick(e) {
+    setOpen(e.currentTarget);
+  }
+  return (
+    <Fragment>
+      <Button
+        sx={{ minWidth: "unset", color: "#000" }}
+        onClick={handleClick}
+        disabled={disabled}
+      >
+        <AddIcon />
+      </Button>
+      <Menu open={!!isOpen} anchorEl={isOpen} onClose={() => setOpen(false)}>
+        <MenuItem
+          onClick={() => {
+            console.log(editor)
+            editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined);
+          }}
+          className="item"
+        >
+          <i className="icon horizontal-rule" />
+          <span className="text">Horizontal Rule</span>
+        </MenuItem>
+        {/* <MenuItem
+                  onClick={() => {
+                    activeEditor.dispatchCommand(INSERT_PAGE_BREAK, undefined);
+                  }}
+                  className="item"
+                >
+                  <i className="icon page-break" />
+                  <span className="text">Page Break</span>
+                </MenuItem> */}
+        <MenuItem
+          onClick={() => {
+            showModal("Insert Image", (onClose) => (
+              <InsertImageDialog activeEditor={editor} onClose={onClose} />
+            ));
+          }}
+          className="item"
+        >
+          <i className="icon image" />
+          <span className="text">Image</span>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            showModal("Insert Inline Image", (onClose) => (
+              <InsertInlineImageDialog
+                activeEditor={editor}
+                onClose={onClose}
+              />
+            ));
+          }}
+          className="item"
+        >
+          <i className="icon image" />
+          <span className="text">Inline Image</span>
+        </MenuItem>
+        {/* <MenuItem
+                  onClick={() => {
+                    activeEditor.dispatchCommand(
+                      INSERT_EXCALIDRAW_COMMAND,
+                      undefined
+                    );
+                  }}
+                  className="item"
+                >
+                  <i className="icon diagram-2" />
+                  <span className="text">Excalidraw</span>
+                </MenuItem> */}
+        {/* <MenuItem
+                  onClick={() => {
+                    showModal("Insert Table", (onClose) => (
+                      <InsertTableDialog
+                        activeEditor={activeEditor}
+                        onClose={onClose}
+                      />
+                    ));
+                  }}
+                  className="item"
+                >
+                  <i className="icon table" />
+                  <span className="text">Table</span>
+                </MenuItem> */}
+
+        <MenuItem
+          onClick={() => {
+            showModal("Insert Equation", (onClose) => (
+              <InsertEquationDialog activeEditor={editor} onClose={onClose} />
+            ));
+          }}
+          className="item"
+        >
+          <i className="icon equation" />
+          <span className="text">Equation</span>
+        </MenuItem>
+        {/* <MenuItem
+                  onClick={() => {
+                    editor.dispatchCommand(
+                      INSERT_COLLAPSIBLE_COMMAND,
+                      undefined
+                    );
+                  }}
+                  className="item"
+                >
+                  <i className="icon caret-right" />
+                  <span className="text">Collapsible container</span>
+                </MenuItem> */}
+        {/* {EmbedConfigs.map((embedConfig) => (
+                  <MenuItem
+                    key={embedConfig.type}
+                    onClick={() => {
+                      activeEditor.dispatchCommand(
+                        INSERT_EMBED_COMMAND,
+                        embedConfig.type
+                      );
+                    }}
+                    className="item"
+                  >
+                    {embedConfig.icon}
+                    <span className="text">{embedConfig.contentName}</span>
+                  </MenuItem>
+                ))} */}
+      </Menu>
+    </Fragment>
+  );
+}
+
 function Divider() {
   return <div className="divider" />;
-}
-
-function FontDropDown({ editor, value, style, disabled = false }) {
-  const handleClick = useCallback(
-    (option) => {
-      editor.update(() => {
-        const selection = $getSelection();
-        if (selection !== null) {
-          $patchStyleText(selection, {
-            [style]: option,
-          });
-        }
-      });
-    },
-    [editor, style]
-  );
-
-  const buttonAriaLabel =
-    style === "font-family"
-      ? "Formatting options for font family"
-      : "Formatting options for font size";
-
-  return (
-    <Menu
-      disabled={disabled}
-      buttonClassName={"toolbar-item " + style}
-      buttonLabel={value}
-      buttonIconClassName={
-        style === "font-family" ? "icon block-type font-family" : ""
-      }
-      buttonAriaLabel={buttonAriaLabel}
-    >
-      {(style === "font-family" ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(
-        ([option, text]) => (
-          <MenuItem
-            className={`item ${dropDownActiveClass(value === option)} ${
-              style === "font-size" ? "fontsize-item" : ""
-            }`}
-            onClick={() => handleClick(option)}
-            key={option}
-          >
-            <span className="text">{text}</span>
-          </MenuItem>
-        )
-      )}
-    </Menu>
-  );
-}
-
-function ElementFormatDropdown({ editor, value, isRTL, disabled }) {
-  const formatOption = ELEMENT_FORMAT_OPTIONS[value || "left"];
-
-  return (
-    <Menu
-      disabled={disabled}
-      buttonLabel={formatOption.name}
-      buttonIconClassName={`icon ${
-        isRTL ? formatOption.iconRTL : formatOption.icon
-      }`}
-      buttonClassName="toolbar-item spaced alignment"
-      buttonAriaLabel="Formatting options for text alignment"
-    >
-      <MenuItem
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
-        }}
-        className="item wide"
-      >
-        <div className="icon-text-container">
-          <i className="icon left-align" />
-          <span className="text">Left Align</span>
-        </div>
-        <span className="shortcut">{SHORTCUTS.LEFT_ALIGN}</span>
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
-        }}
-        className="item wide"
-      >
-        <div className="icon-text-container">
-          <i className="icon center-align" />
-          <span className="text">Center Align</span>
-        </div>
-        <span className="shortcut">{SHORTCUTS.CENTER_ALIGN}</span>
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
-        }}
-        className="item wide"
-      >
-        <div className="icon-text-container">
-          <i className="icon right-align" />
-          <span className="text">Right Align</span>
-        </div>
-        <span className="shortcut">{SHORTCUTS.RIGHT_ALIGN}</span>
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify");
-        }}
-        className="item wide"
-      >
-        <div className="icon-text-container">
-          <i className="icon justify-align" />
-          <span className="text">Justify Align</span>
-        </div>
-        <span className="shortcut">{SHORTCUTS.JUSTIFY_ALIGN}</span>
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "start");
-        }}
-        className="item wide"
-      >
-        <i
-          className={`icon ${
-            isRTL
-              ? ELEMENT_FORMAT_OPTIONS.start.iconRTL
-              : ELEMENT_FORMAT_OPTIONS.start.icon
-          }`}
-        />
-        <span className="text">Start Align</span>
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "end");
-        }}
-        className="item wide"
-      >
-        <i
-          className={`icon ${
-            isRTL
-              ? ELEMENT_FORMAT_OPTIONS.end.iconRTL
-              : ELEMENT_FORMAT_OPTIONS.end.icon
-          }`}
-        />
-        <span className="text">End Align</span>
-      </MenuItem>
-      <Divider />
-      <MenuItem
-        onClick={() => {
-          editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
-        }}
-        className="item wide"
-      >
-        <div className="icon-text-container">
-          <i className={"icon " + (isRTL ? "indent" : "outdent")} />
-          <span className="text">Outdent</span>
-        </div>
-        <span className="shortcut">{SHORTCUTS.OUTDENT}</span>
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
-        }}
-        className="item wide"
-      >
-        <div className="icon-text-container">
-          <i className={"icon " + (isRTL ? "outdent" : "indent")} />
-          <span className="text">Indent</span>
-        </div>
-        <span className="shortcut">{SHORTCUTS.INDENT}</span>
-      </MenuItem>
-    </Menu>
-  );
 }
 
 export default function ToolbarPlugin({
@@ -794,19 +681,6 @@ export default function ToolbarPlugin({
         <div>not supported</div>
       ) : (
         <>
-          <FontDropDown
-            disabled={!isEditable}
-            style={"font-family"}
-            value={toolbarState.fontFamily}
-            editor={activeEditor}
-          />
-          <Divider />
-          <FontSize
-            selectionFontSize={toolbarState.fontSize.slice(0, -2)}
-            editor={activeEditor}
-            disabled={!isEditable}
-          />
-          <Divider />
           <button
             disabled={!isEditable}
             onClick={() => {
@@ -1001,143 +875,17 @@ export default function ToolbarPlugin({
           </Menu>
           {canViewerSeeInsertDropdown && (
             <>
-              <Divider />
-              <Menu
+              <InsertDropdown
                 disabled={!isEditable}
-                buttonClassName="toolbar-item spaced"
-                buttonLabel="Insert"
-                buttonAriaLabel="Insert specialized editor node"
-                buttonIconClassName="icon plus"
-              >
-                <MenuItem
-                  onClick={() => {
-                    activeEditor.dispatchCommand(
-                      INSERT_HORIZONTAL_RULE_COMMAND,
-                      undefined
-                    );
-                  }}
-                  className="item"
-                >
-                  <i className="icon horizontal-rule" />
-                  <span className="text">Horizontal Rule</span>
-                </MenuItem>
-                {/* <MenuItem
-                  onClick={() => {
-                    activeEditor.dispatchCommand(INSERT_PAGE_BREAK, undefined);
-                  }}
-                  className="item"
-                >
-                  <i className="icon page-break" />
-                  <span className="text">Page Break</span>
-                </MenuItem> */}
-                <MenuItem
-                  onClick={() => {
-                    showModal("Insert Image", (onClose) => (
-                      <InsertImageDialog
-                        activeEditor={activeEditor}
-                        onClose={onClose}
-                      />
-                    ));
-                  }}
-                  className="item"
-                >
-                  <i className="icon image" />
-                  <span className="text">Image</span>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    showModal("Insert Inline Image", (onClose) => (
-                      <InsertInlineImageDialog
-                        activeEditor={activeEditor}
-                        onClose={onClose}
-                      />
-                    ));
-                  }}
-                  className="item"
-                >
-                  <i className="icon image" />
-                  <span className="text">Inline Image</span>
-                </MenuItem>
-                {/* <MenuItem
-                  onClick={() => {
-                    activeEditor.dispatchCommand(
-                      INSERT_EXCALIDRAW_COMMAND,
-                      undefined
-                    );
-                  }}
-                  className="item"
-                >
-                  <i className="icon diagram-2" />
-                  <span className="text">Excalidraw</span>
-                </MenuItem> */}
-                {/* <MenuItem
-                  onClick={() => {
-                    showModal("Insert Table", (onClose) => (
-                      <InsertTableDialog
-                        activeEditor={activeEditor}
-                        onClose={onClose}
-                      />
-                    ));
-                  }}
-                  className="item"
-                >
-                  <i className="icon table" />
-                  <span className="text">Table</span>
-                </MenuItem> */}
-
-                <MenuItem
-                  onClick={() => {
-                    showModal("Insert Equation", (onClose) => (
-                      <InsertEquationDialog
-                        activeEditor={activeEditor}
-                        onClose={onClose}
-                      />
-                    ));
-                  }}
-                  className="item"
-                >
-                  <i className="icon equation" />
-                  <span className="text">Equation</span>
-                </MenuItem>
-                {/* <MenuItem
-                  onClick={() => {
-                    editor.dispatchCommand(
-                      INSERT_COLLAPSIBLE_COMMAND,
-                      undefined
-                    );
-                  }}
-                  className="item"
-                >
-                  <i className="icon caret-right" />
-                  <span className="text">Collapsible container</span>
-                </MenuItem> */}
-                {/* {EmbedConfigs.map((embedConfig) => (
-                  <MenuItem
-                    key={embedConfig.type}
-                    onClick={() => {
-                      activeEditor.dispatchCommand(
-                        INSERT_EMBED_COMMAND,
-                        embedConfig.type
-                      );
-                    }}
-                    className="item"
-                  >
-                    {embedConfig.icon}
-                    <span className="text">{embedConfig.contentName}</span>
-                  </MenuItem>
-                ))} */}
-              </Menu>
+                editor={activeEditor}
+                showModal={showModal}
+              />
+              <Divider />
             </>
           )}
         </>
       )}
       <Divider />
-      <ElementFormatDropdown
-        disabled={!isEditable}
-        value={toolbarState.elementFormat}
-        editor={activeEditor}
-        isRTL={toolbarState.isRTL}
-      />
 
       {modal}
     </div>
