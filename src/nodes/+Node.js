@@ -1,6 +1,5 @@
 import { Pure } from "@design-express/fabrica";
-
-import Editor from "./Component/Lexical";
+import Editor from "../Component/Lexical";
 
 export class lexicalNode extends Pure {
   static path = "UI";

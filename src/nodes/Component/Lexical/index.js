@@ -19,13 +19,14 @@ import { parseAllowedColor, parseAllowedFontSize } from "./styleConfig";
 import lexicalTheme from "./theme";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
 import { useEffect, useState } from "react";
-import OnChangePlugin from "./plugins/OnChangePlugin";
+import OnChangePlugin from "src/Component/Lexical/plugins/OnChangePlugin";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import defaultNodes from "./nodes";
 import { MarkdownShortcutPlugin } from "./plugins/test";
-import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
+import { TablePlugin } from "src/Component/Lexical/plugins/TablePlugin/TablePlugin";
+import { TableContentsPlugin } from "src/Component/Lexical/plugins/TablePlugin/TableContentsPlugin";
 
 const placeholder = "Enter some rich text...";
 
@@ -190,6 +191,7 @@ export default function Editor({ editorRef }) {
           <HistoryPlugin />
           <AutoFocusPlugin />
           <TablePlugin />
+          <TableContentsPlugin />
           <TabIndentationPlugin />
           <ListPlugin />
           <MarkdownShortcutPlugin />
