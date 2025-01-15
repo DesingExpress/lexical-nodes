@@ -90,6 +90,7 @@ import FormatUnderlinedIcon from "@mui/icons-material/FormatUnderlined";
 import CodeIcon from "@mui/icons-material/Code";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
 import { ReactComponent as LowercaseIcon } from "../../../images/icons/type-lowercase.svg";
 import { ReactComponent as H1Icon } from "../../../images/icons/type-h1.svg";
 import { ReactComponent as H2Icon } from "../../../images/icons/type-h2.svg";
@@ -98,6 +99,11 @@ import { ReactComponent as H4Icon } from "../../../images/icons/type-h4.svg";
 import { ReactComponent as H5Icon } from "../../../images/icons/type-h5.svg";
 import { ReactComponent as H6Icon } from "../../../images/icons/type-h6.svg";
 import { ReactComponent as ParagraphIcon } from "../../../images/icons/text-paragraph.svg";
+import {
+  $convertFromMarkdownString,
+  $convertToMarkdownString,
+} from "#/@lexical/markdown/index.js";
+import { MUT_TRANSFORMERS } from "#/@payload/richtext-lexical/src/lexical/plugins/MarkdownShortcutPlugin";
 
 function dropDownActiveClass(active) {
   if (active) {
@@ -252,7 +258,7 @@ function InsertDropdown({ disabled, editor, showModal }) {
       <Menu open={!!isOpen} anchorEl={isOpen} onClose={() => setOpen(false)}>
         <MenuItem
           onClick={() => {
-            console.log(editor)
+            console.log(editor);
             editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined);
           }}
           className="item"
@@ -618,6 +624,23 @@ export default function ToolbarPlugin({
   const canViewerSeeInsertDropdown = !toolbarState.isImageCaption;
   const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption;
 
+  function lx2md() {
+    editor.read(() => {
+      const markdown = $convertToMarkdownString(
+        MUT_TRANSFORMERS.current,
+        undefined, //node
+        true
+      );
+      toolbarState.setCMText(markdown);
+    });
+  }
+  function md2lx() {
+    const md = toolbarState.getCMText();
+    editor.update(() => {
+      $convertFromMarkdownString(md, MUT_TRANSFORMERS.current, undefined, true);
+    });
+  }
+
   return (
     <div className="toolbar">
       <button
@@ -886,7 +909,26 @@ export default function ToolbarPlugin({
         </>
       )}
       <Divider />
-
+      <button
+        disabled={!isEditable}
+        onClick={lx2md}
+        className={"toolbar-item spaced "}
+        aria-label="toggle edit on"
+        title={`raw false`}
+        type="button"
+      >
+        <EditIcon fontSize="inherit" className="format" />
+      </button>
+      <button
+        disabled={!isEditable}
+        onClick={md2lx}
+        className={"toolbar-item spaced "}
+        aria-label="toggle edit off"
+        title={`raw true`}
+        type="button"
+      >
+        <EditIcon fontSize="inherit" className="format" />
+      </button>
       {modal}
     </div>
   );
