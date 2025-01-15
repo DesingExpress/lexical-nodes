@@ -18,13 +18,17 @@ import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { EquationNode } from "../plugins/EquationsPlugin/node/EquationNode";
 import { InlineImageNode } from "../plugins/InlineImagePlugin/nodes/InlineImageNode";
 import { ImageNode } from "../plugins/ImagesPlugin/nodes/ImageNode";
+import { CodeNode } from "../plugins/CodePlugin/node/CodeBlockNode";
+import { TabNode } from "lexical";
+import { FrontmatterNode } from "../plugins/FrontmatterPlugin/node/FrontamatterNode";
 
 const defaultNodes = [
   HeadingNode,
   ListNode,
   ListItemNode,
   QuoteNode,
-  // CodeNode,
+  CodeNode,
+  TabNode,
   TableNode,
   TableCellNode,
   TableRowNode,
@@ -36,6 +40,7 @@ const defaultNodes = [
   HorizontalRuleNode,
   MarkNode,
   EquationNode,
+  FrontmatterNode,
   InlineImageNode,
   ImageNode,
 ];
