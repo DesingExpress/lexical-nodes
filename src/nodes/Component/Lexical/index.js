@@ -27,6 +27,7 @@ import { MarkdownShortcutPlugin } from "./plugins/test";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { TablePlugin } from "src/Component/Lexical/plugins/TablePlugin/TablePlugin";
 import { TableContentsPlugin } from "src/Component/Lexical/plugins/TablePlugin/TableContentsPlugin";
+import ComponentPickerMenuPlugin from "src/Component/Lexical/plugins/ComponentPickerPlugin";
 
 const placeholder = "Enter some rich text...";
 
@@ -195,6 +196,7 @@ export default function Editor({ editorRef }) {
           <TabIndentationPlugin />
           <ListPlugin />
           <MarkdownShortcutPlugin />
+          <ComponentPickerMenuPlugin />
           <EditorRefPlugin editorRef={editorRef} />
         </div>
       </div>
