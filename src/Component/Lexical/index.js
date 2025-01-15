@@ -15,6 +15,8 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
+import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 
 // import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { $isTextNode, isHTMLElement, ParagraphNode, TextNode } from "lexical";
@@ -33,9 +35,18 @@ import InlineImagePlugin from "./plugins/InlineImagePlugin";
 import ImagesPlugin from "./plugins/ImagesPlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { SharedHistoryContext } from "./context/SharedHistoryContext";
+import {
+  SharedHistoryContext,
+  useSharedHistoryContext,
+} from "./context/SharedHistoryContext";
 import { ToolbarContext } from "./context/ToolbarContext";
 import FloatingTextFormatToolbarPlugin from "./plugins/FloatingTextFormatToolbarPlugin";
+import TabFocusPlugin from "./plugins/TabFocusPlugin";
+import { CODE } from "./plugins/CodePlugin/transformer";
+import { SettingsContext, useSettings } from "./context/SettingsContext";
+import TestRawEditor from "./TestRawEditor";
+import { createTheme, ThemeProvider } from "@mui/material";
+import { FRONTMATTER } from "./plugins/FrontmatterPlugin/transformer";
 
 const placeholder = "Enter some rich text...";
 
@@ -130,6 +141,11 @@ const constructImportMap = () => {
 };
 
 function Editor() {
+  const {
+    settings: { isRichText },
+  } = useSettings();
+  const { historyState } = useSharedHistoryContext();
+
   const [floatingAnchorElem, setFloatingAnchorElem] = useState(null);
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
@@ -149,57 +165,81 @@ function Editor() {
           setIsLinkEditMode={setIsLinkEditMode}
         />
         <div className="editor-container">
-          <div className="editor-inner" ref={onRef}>
-            <RichTextPlugin
-              contentEditable={
-                <div className="editor-scroller">
-                  <div className="editor" ref={onRef}>
-                    <ContentEditable
-                      className={"ContentEditable__root"}
-                      aria-placeholder={placeholder}
-                      placeholder={
-                        <div className={"ContentEditable__placeholder"}>
-                          {placeholder}
-                        </div>
-                      }
-                    />
+          <AutoFocusPlugin />
+          <HistoryPlugin externalHistoryState={historyState} />
+          {isRichText ? (
+            <div className="editor-inner" tabIndex={-1}>
+              <RichTextPlugin
+                contentEditable={
+                  <div className="editor-scroller">
+                    <div className="editor" ref={onRef}>
+                      <ContentEditable
+                        className={"ContentEditable__root"}
+                        aria-placeholder={placeholder}
+                        placeholder={
+                          <div className={"ContentEditable__placeholder"}>
+                            {placeholder}
+                          </div>
+                        }
+                      />
+                    </div>
                   </div>
-                </div>
-              }
-              ErrorBoundary={LexicalErrorBoundary}
-            />
-            <HistoryPlugin />
-            <AutoFocusPlugin />
-            <ListPlugin />
-            <MarkdownShortcutPlugin plugins={[EQUATION]} />
-            <EquationsPlugin />
-            <HorizontalRulePlugin />
-            {floatingAnchorElem && (
-              <>
-                <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
-                {/* <CodeActionMenuPlugin anchorElem={floatingAnchorElem} /> */}
-                {/* <FloatingLinkEditorPlugin
+                }
+                ErrorBoundary={LexicalErrorBoundary}
+              />
+              <TabIndentationPlugin maxIndent={0} />
+              <TabFocusPlugin />
+              <ListPlugin />
+              <MarkdownShortcutPlugin plugins={[EQUATION, CODE, FRONTMATTER]} />
+              <EquationsPlugin />
+              <HorizontalRulePlugin />
+
+              {floatingAnchorElem && (
+                <>
+                  <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+                  {/* <CodeActionMenuPlugin anchorElem={floatingAnchorElem} /> */}
+                  {/* <FloatingLinkEditorPlugin
                   anchorElem={floatingAnchorElem}
                   isLinkEditMode={isLinkEditMode}
                   setIsLinkEditMode={setIsLinkEditMode}
                 /> */}
-                {/* <TableCellActionMenuPlugin
+                  {/* <TableCellActionMenuPlugin
                   anchorElem={floatingAnchorElem}
                   cellMerge={true}
                 /> */}
-                {/* <TableHoverActionsPlugin anchorElem={floatingAnchorElem} /> */}
-                <FloatingTextFormatToolbarPlugin
-                  anchorElem={floatingAnchorElem}
-                  setIsLinkEditMode={setIsLinkEditMode}
-                />
-              </>
-            )}
-            <InlineImagePlugin />
-            <ImagesPlugin />
-            {/* <SlashMenuPlugin anchorElem={floatingAnchorElem} /> */}
-          </div>
+                  {/* <TableHoverActionsPlugin anchorElem={floatingAnchorElem} /> */}
+                  <FloatingTextFormatToolbarPlugin
+                    anchorElem={floatingAnchorElem}
+                    setIsLinkEditMode={setIsLinkEditMode}
+                  />
+                </>
+              )}
+              <InlineImagePlugin />
+              <ImagesPlugin />
+              {/* <SlashMenuPlugin anchorElem={floatingAnchorElem} /> */}
+            </div>
+          ) : (
+            <>
+              <PlainTextPlugin
+                contentEditable={
+                  <ContentEditable
+                    className={"ContentEditable__root"}
+                    aria-placeholder={placeholder}
+                    placeholder={
+                      <div className={"ContentEditable__placeholder"}>
+                        {placeholder}
+                      </div>
+                    }
+                  />
+                }
+                ErrorBoundary={LexicalErrorBoundary}
+              />
+              <HistoryPlugin externalHistoryState={historyState} />
+            </>
+          )}
         </div>
       </div>
+      <TestRawEditor />
     </Fragment>
   );
 }
@@ -221,12 +261,26 @@ export default function Lexical() {
     []
   );
   return (
-    <LexicalComposer initialConfig={editorConfig}>
-      <SharedHistoryContext>
-        <ToolbarContext>
-          <Editor />
-        </ToolbarContext>
-      </SharedHistoryContext>
-    </LexicalComposer>
+    <ThemeProvider theme={theme}>
+      <SettingsContext>
+        <LexicalComposer initialConfig={editorConfig}>
+          <SharedHistoryContext>
+            <ToolbarContext>
+              <div
+                style={{
+                  overflow: "hidden auto",
+                  height: "100%",
+                  width: "100%",
+                }}
+              >
+                <Editor />
+              </div>
+            </ToolbarContext>
+          </SharedHistoryContext>
+        </LexicalComposer>
+      </SettingsContext>
+    </ThemeProvider>
   );
 }
+
+const theme = createTheme({ palette: { mode: "light" } });
