@@ -9,8 +9,11 @@
   ],
   "dependencies": {
     "@design-express/node-scripts": "^1.2.7",
+    "@excalidraw/excalidraw": "^0.17.6",
+    "@lexical/code": "^0.23.1",
     "@lexical/react": "^0.23.1",
     "@lexical/rich-text": "^0.23.1",
+    "@lexical/selection": "^0.23.1",
     "@lexical/table": "^0.23.1",
     "@lexical/utils": "^0.23.1",
     "install": "^0.13.0",
