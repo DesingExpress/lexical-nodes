@@ -1,16 +1,20 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import * as React from "react";
 
 // import { registerMarkdownShortcuts } from "../markdown/MarkdownShortcuts.js";
 import { registerMarkdownShortcuts } from "#/@lexical/markdown/MarkdownShortcuts.js";
 // import { TRANSFORMERS } from "../markdown/index.js";
-import { TRANSFORMERS } from "#/@lexical/markdown/index.js";
+import {
+  ELEMENT_TRANSFORMERS,
+  TEXT_FORMAT_TRANSFORMERS,
+  TEXT_MATCH_TRANSFORMERS,
+} from "#/@lexical/markdown/index.js";
 
 import {
   $createHorizontalRuleNode,
   $isHorizontalRuleNode,
   HorizontalRuleNode,
 } from "@lexical/react/LexicalHorizontalRuleNode";
+import { createRef, useEffect } from "react";
 
 const HR = {
   dependencies: [HorizontalRuleNode],
@@ -33,14 +37,25 @@ const HR = {
   type: "element",
 };
 
+const DEFAULT_TRANSFORMERS = [
+  HR,
+  ...ELEMENT_TRANSFORMERS,
+  // ...MULTILINE_ELEMENT_TRANSFORMERS,
+  ...TEXT_FORMAT_TRANSFORMERS,
+  ...TEXT_MATCH_TRANSFORMERS,
+];
+
 export const MarkdownShortcutPlugin = ({ plugins = [] }) => {
   const [editor] = useLexicalComposerContext();
 
-  React.useEffect(() => {
-    const DEFAULT_TRANSFORMERS = [HR, ...plugins, ...TRANSFORMERS];
+  useEffect(() => {
+    MUT_TRANSFORMERS.current = [...DEFAULT_TRANSFORMERS, ...plugins];
 
-    return registerMarkdownShortcuts(editor, DEFAULT_TRANSFORMERS);
-  }, [editor]);
+    return registerMarkdownShortcuts(editor, MUT_TRANSFORMERS.current);
+  }, [editor, plugins]);
 
   return null;
 };
+
+// Mutation
+export const MUT_TRANSFORMERS = createRef();

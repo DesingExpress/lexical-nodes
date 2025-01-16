@@ -42,7 +42,6 @@ import {
 } from "lexical";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
-// import { useSettings } from "../context/SettingsContext";
 // import { useSharedHistoryContext } from "../context/SharedHistoryContext";
 import brokenImage from "../../../../images/image-broken.svg";
 // import EmojisPlugin from "../plugins/EmojisPlugin";
@@ -55,7 +54,6 @@ import brokenImage from "../../../../images/image-broken.svg";
 // import { EmojiNode } from "./EmojiNode";
 import { $isImageNode } from "../nodes/ImageNode";
 import { useSharedHistoryContext } from "src/Component/Lexical/context/SharedHistoryContext";
-import { useSettings } from "src/Component/Lexical/context/SettingsContext";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import ImageResizer from "./ImageResizer";
@@ -358,9 +356,6 @@ export default function ImageComponent({
   };
 
   const { historyState } = useSharedHistoryContext();
-  const {
-    settings: { showNestedEditorTreeView },
-  } = useSettings();
 
   const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
   const isFocused = (isSelected || isResizing) && isEditable;

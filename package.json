@@ -8,6 +8,10 @@
     "build"
   ],
   "dependencies": {
+    "@codemirror/language": "^6.10.8",
+    "@codemirror/language-data": "^6.5.1",
+    "@codemirror/state": "^6.5.1",
+    "@codemirror/view": "^6.36.2",
     "@design-express/node-scripts": "^1.2.7",
     "@excalidraw/excalidraw": "^0.17.6",
     "@lexical/code": "^0.23.1",
@@ -16,9 +20,11 @@
     "@lexical/selection": "^0.23.1",
     "@lexical/table": "^0.23.1",
     "@lexical/utils": "^0.23.1",
+    "codemirror": "^6.0.1",
     "install": "^0.13.0",
     "katex": "^0.16.20",
-    "lexical": "^0.23.1"
+    "lexical": "^0.23.1",
+    "nanoid": "^5.0.9"
   },
   "scripts": {
     "start": "node-scripts start",

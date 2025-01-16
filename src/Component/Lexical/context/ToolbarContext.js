@@ -63,6 +63,10 @@ const INITIAL_TOOLBAR_STATE = {
   isUppercase: false,
   isCapitalize: false,
   rootType: "root",
+
+  // For test only
+  getCMText: () => {},
+  setCMText: () => {},
 };
 
 const Context = createContext(undefined);
