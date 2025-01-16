@@ -27,13 +27,13 @@ import { MarkdownShortcutPlugin } from "./plugins/test";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { TablePlugin } from "src/Component/Lexical/plugins/TablePlugin/TablePlugin";
 import { TableContentsPlugin } from "src/Component/Lexical/plugins/TablePlugin/TableContentsPlugin";
-import ComponentPickerMenuPlugin from "src/Component/Lexical/plugins/ComponentPickerPlugin";
-import AutoEmbedPlugin from "src/Component/Lexical/plugins/AutoEmbedPlugin";
-import CollapsiblePlugin from "src/Component/Lexical/plugins/CollapsiblePlugin";
-import ExcalidrawPlugin from "src/Component/Lexical/plugins/ExcalidrawPlugin";
-import { LayoutPlugin } from "src/Component/Lexical/plugins/LayoutPlugin";
-import PageBreakPlugin from "src/Component/Lexical/plugins/PageBreakPlugin";
-import PollPlugin from "src/Component/Lexical/plugins/PollPlugin";
+// import ComponentPickerMenuPlugin from "src/Component/Lexical/plugins/ComponentPickerPlugin";
+// import AutoEmbedPlugin from "src/Component/Lexical/plugins/AutoEmbedPlugin";
+// import CollapsiblePlugin from "src/Component/Lexical/plugins/CollapsiblePlugin";
+// import ExcalidrawPlugin from "src/Component/Lexical/plugins/ExcalidrawPlugin";
+// import { LayoutPlugin } from "src/Component/Lexical/plugins/LayoutPlugin";
+// import PageBreakPlugin from "src/Component/Lexical/plugins/PageBreakPlugin";
+// import PollPlugin from "src/Component/Lexical/plugins/PollPlugin";
 import EquationsPlugin from "src/Component/Lexical/plugins/EquationsPlugin";
 
 const placeholder = "Enter some rich text...";
@@ -203,14 +203,14 @@ export default function Editor({ editorRef }) {
           <TabIndentationPlugin />
           <ListPlugin />
           <MarkdownShortcutPlugin />
-          <ComponentPickerMenuPlugin />
+          {/* <ComponentPickerMenuPlugin />
           <AutoEmbedPlugin />
           <CollapsiblePlugin />
           <ExcalidrawPlugin />
           <LayoutPlugin />
           <PageBreakPlugin />
           <PollPlugin />
-          <CollapsiblePlugin />
+          <CollapsiblePlugin /> */}
           <EquationsPlugin />
           <EditorRefPlugin editorRef={editorRef} />
         </div>

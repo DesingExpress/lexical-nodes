@@ -47,6 +47,12 @@ import { SettingsContext, useSettings } from "./context/SettingsContext";
 import TestRawEditor from "./TestRawEditor";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FRONTMATTER } from "./plugins/FrontmatterPlugin/transformer";
+// import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
+// import PollPlugin from "./plugins/PollPlugin";
+// import PageBreakPlugin from "./plugins/PageBreakPlugin";
+// import { LayoutPlugin } from "./plugins/LayoutPlugin";
+// import ExcalidrawPlugin from "./plugins/ExcalidrawPlugin";
+// import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
 
 const placeholder = "Enter some rich text...";
 
@@ -193,7 +199,12 @@ function Editor() {
               <MarkdownShortcutPlugin plugins={[EQUATION, CODE, FRONTMATTER]} />
               <EquationsPlugin />
               <HorizontalRulePlugin />
-
+              {/* <AutoEmbedPlugin />
+              <CollapsiblePlugin />
+              <ExcalidrawPlugin />
+              <LayoutPlugin />
+              <PageBreakPlugin />
+              <PollPlugin /> */}
               {floatingAnchorElem && (
                 <>
                   <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
