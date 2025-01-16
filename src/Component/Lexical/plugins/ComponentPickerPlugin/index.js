@@ -60,7 +60,7 @@ class ComponentPickerOption extends MenuOption {
   onSelect;
 
   constructor(title, icon, keywords, keyboardShortcut, onSelect) {
-    super(title);
+    super(title, keywords, icon, keyboardShortcut, onSelect);
     this.title = title;
     this.keywords = keywords || [];
     this.icon = icon;
