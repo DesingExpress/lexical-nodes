@@ -87,7 +87,7 @@ export class CodeNode extends DecoratorNode {
       <Suspense fallback={null}>
         <CodeBlockComponent
           domEl={this.__cm.dom}
-          language={"sql"}
+          language={this.getLanguage()}
           languageList={languageList}
           onUpdateLanguage={(v) => this.setLanguage(v)}
           meta={this.__meta}
