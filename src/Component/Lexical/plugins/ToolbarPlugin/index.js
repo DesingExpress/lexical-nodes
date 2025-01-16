@@ -38,10 +38,7 @@ import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
-  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
-  INDENT_CONTENT_COMMAND,
-  OUTDENT_CONTENT_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
@@ -93,17 +90,13 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import { ReactComponent as LowercaseIcon } from "../../../images/icons/type-lowercase.svg";
 import { ReactComponent as H1Icon } from "../../../images/icons/type-h1.svg";
-import { ReactComponent as H2Icon } from "../../../images/icons/type-h2.svg";
-import { ReactComponent as H3Icon } from "../../../images/icons/type-h3.svg";
-import { ReactComponent as H4Icon } from "../../../images/icons/type-h4.svg";
-import { ReactComponent as H5Icon } from "../../../images/icons/type-h5.svg";
-import { ReactComponent as H6Icon } from "../../../images/icons/type-h6.svg";
 import { ReactComponent as ParagraphIcon } from "../../../images/icons/text-paragraph.svg";
 import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
 } from "#/@lexical/markdown/index.js";
 import { MUT_TRANSFORMERS } from "#/@payload/richtext-lexical/src/lexical/plugins/MarkdownShortcutPlugin";
+import { $getFrontmatter } from "../../utils/getMetaData";
 
 function dropDownActiveClass(active) {
   if (active) {
@@ -632,6 +625,7 @@ export default function ToolbarPlugin({
         true
       );
       toolbarState.setCMText(markdown);
+      console.log($getFrontmatter());
     });
   }
   function md2lx() {
