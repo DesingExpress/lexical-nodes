@@ -95,8 +95,8 @@ import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
 } from "#/@lexical/markdown/index.js";
-import { MUT_TRANSFORMERS } from "#/@payload/richtext-lexical/src/lexical/plugins/MarkdownShortcutPlugin";
 import { $getFrontmatter } from "../../utils/getMetaData";
+import { MUT_TRANSFORMERS } from "../MarkdownShortcut";
 
 function dropDownActiveClass(active) {
   if (active) {
