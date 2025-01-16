@@ -77,13 +77,14 @@ import {
   TableNode,
   TableRowNode,
 } from "@lexical/table";
+import { Button, DialogActions, TextField } from "@mui/material";
 import { EditorThemeClasses, Klass, LexicalEditor, LexicalNode } from "lexical";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import invariant from "shared/invariant";
+import invariant from "../../shared/invariant";
 
-import Button from "../ui/Button";
-import { DialogActions } from "../ui/Dialog";
-import TextInput from "../ui/TextInput";
+// import Button from "../ui/Button";
+// import { DialogActions } from "../ui/Dialog";
+// import TextInput from "../ui/TextInput";
 
 export const CellContext = createContext({
   cellEditorConfig: null,
@@ -142,7 +143,7 @@ export function InsertTableDialog({ activeEditor, onClose }) {
 
   return (
     <>
-      <TextInput
+      <TextField
         placeholder={"# of rows (1-500)"}
         label="Rows"
         onChange={setRows}
@@ -150,7 +151,7 @@ export function InsertTableDialog({ activeEditor, onClose }) {
         data-test-id="table-modal-rows"
         type="number"
       />
-      <TextInput
+      <TextField
         placeholder={"# of columns (1-50)"}
         label="Columns"
         onChange={setColumns}

@@ -24,6 +24,7 @@
     "install": "^0.13.0",
     "katex": "^0.16.20",
     "lexical": "^0.23.1",
+    "lodash-es": "^4.17.21",
     "nanoid": "^5.0.9"
   },
   "scripts": {

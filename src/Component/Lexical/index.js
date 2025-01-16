@@ -47,6 +47,10 @@ import { SettingsContext, useSettings } from "./context/SettingsContext";
 import TestRawEditor from "./TestRawEditor";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FRONTMATTER } from "./plugins/FrontmatterPlugin/transformer";
+import { TablePlugin } from "./plugins/TablePlugin/TablePlugin";
+import TableActionMenuPlugin from "./plugins/TablePlugin/TableActionMenuPlugin";
+import TableHoverActionsPlugin from "./plugins/TablePlugin/TableHoverActionsPlugin";
+import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
 // import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
 // import PollPlugin from "./plugins/PollPlugin";
 // import PageBreakPlugin from "./plugins/PageBreakPlugin";
@@ -199,6 +203,10 @@ function Editor() {
               <MarkdownShortcutPlugin plugins={[EQUATION, CODE, FRONTMATTER]} />
               <EquationsPlugin />
               <HorizontalRulePlugin />
+              <TablePlugin />
+              <TableOfContentsPlugin />
+              <TableActionMenuPlugin />
+              <TableHoverActionsPlugin />
               {/* <AutoEmbedPlugin />
               <CollapsiblePlugin />
               <ExcalidrawPlugin />

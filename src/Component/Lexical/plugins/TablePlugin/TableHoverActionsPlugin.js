@@ -26,7 +26,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as React from "react";
 import { createPortal } from "react-dom";
 
-import { useDebounce } from "../CodeActionMenuPlugin/utils";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const BUTTON_WIDTH_PX = 20;
 
