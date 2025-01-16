@@ -21,7 +21,6 @@ import { Compartment } from "@codemirror/state";
 
 const CodeBlockComponent = lazy(() => import("./CodeBlockComponent"));
 
-
 const languageMap = (function () {
   const result = {};
 
@@ -45,18 +44,18 @@ export class CodeNode extends DecoratorNode {
     return new CodeNode(
       node.getLanguage(),
       node.getTextContent(),
-      { __cm: node.__cm, languageConf: node.languageConf },
+      { __cm: node.__cm, languageConf: node.languageConf, ...node.__meta },
       node.__key
     );
   }
 
   constructor(language, code, meta = {}, key) {
     super(key);
-
-    this.languageConf = meta.languageConf ?? new Compartment();
+    const { __cm, languageConf, ..._meta } = meta;
+    this.languageConf = languageConf ?? new Compartment();
 
     this.__cm =
-      meta.__cm ??
+      __cm ??
       this.__cm ??
       new EditorView({
         doc: code,
@@ -66,6 +65,7 @@ export class CodeNode extends DecoratorNode {
           EditorView.lineWrapping,
         ],
       });
+    this.__meta = _meta;
     this.setLanguage(language);
   }
 
@@ -90,6 +90,7 @@ export class CodeNode extends DecoratorNode {
           language={"sql"}
           languageList={languageList}
           onUpdateLanguage={(v) => this.setLanguage(v)}
+          meta={this.__meta}
         />
       </Suspense>
     );
@@ -215,10 +216,16 @@ export class CodeNode extends DecoratorNode {
   getTextContentSize() {
     return this.__cm?.state.doc.length ?? 0;
   }
+
+  getMeta() {
+    return Object.entries(this.__meta)
+      .map(([k, v]) => `${k}="${v}"`)
+      .join(" ");
+  }
 }
 
-export function $createCodeNode(language, code) {
-  return $applyNodeReplacement(new CodeNode(language, code));
+export function $createCodeNode(language, code, meta) {
+  return $applyNodeReplacement(new CodeNode(language, code, meta));
 }
 
 export function $isCodeNode(node) {

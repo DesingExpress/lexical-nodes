@@ -1,6 +1,7 @@
 import { $createCodeNode, $isCodeNode, CodeNode } from "./node/CodeBlockNode";
+import { parse } from "./node/utils";
 
-const CODE_START_REGEX = /^[ \t]*```(\w+)?/;
+const CODE_START_REGEX = /^[ \t]*```(\w+)?(?:[ \t]+(.*))?/;
 const CODE_END_REGEX = /[ \t]*```$/;
 
 export const CODE = {
@@ -13,6 +14,7 @@ export const CODE = {
     return (
       "```" +
       (node.getLanguage() || "") +
+      ` ${node.getMeta() || ""}` +
       (textContent ? "\n" + textContent : "") +
       "\n" +
       "```"
@@ -71,11 +73,19 @@ export const CODE = {
         code = linesInBetween.join("\n");
       }
 
-      const codeBlockNode = $createCodeNode(startMatch[1], code);
-      console.log(rootNode);
+      const codeBlockNode = $createCodeNode(
+        startMatch[1],
+        code,
+        parse(startMatch[2])
+      );
+
       rootNode.append(codeBlockNode);
     } else if (children) {
-      const node = $createCodeNode(startMatch ? startMatch[1] : undefined);
+      const node = $createCodeNode(
+        startMatch ? startMatch[1] : undefined,
+        undefined,
+        parse(startMatch[2])
+      );
 
       rootNode.replace(node);
     }

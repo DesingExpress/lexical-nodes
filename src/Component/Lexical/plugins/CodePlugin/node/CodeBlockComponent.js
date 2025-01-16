@@ -56,11 +56,12 @@ export default function CodeBlockComponent({
   language,
   languageList,
   onUpdateLanguage,
+  meta,
   ...props
 }) {
   const ref = useRef();
   const [isEidtMode, setEditMode] = useState(false);
-  const [title, setTitle] = useState(undefined);
+  const [title, setTitle] = useState(meta.title);
 
   function handleClickEditMode() {
     setEditMode(true);
@@ -69,6 +70,7 @@ export default function CodeBlockComponent({
     e.preventDefault();
     e.stopPropagation();
     const title = new FormData(e.target).get("title");
+    meta.title = title;
     setTitle(title);
     setEditMode(false);
   }
