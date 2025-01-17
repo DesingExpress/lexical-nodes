@@ -25,8 +25,6 @@ import { parseAllowedColor, parseAllowedFontSize } from "./styleConfig";
 import lexicalTheme from "./theme";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 
-import { MarkdownShortcutPlugin } from "#/@payload/richtext-lexical/src/lexical/plugins/MarkdownShortcutPlugin";
-
 import { Fragment, useMemo, useState } from "react";
 import DraggableBlockPlugin from "./plugins/DraggableBlockPlugin";
 import EquationsPlugin, { EQUATION } from "./plugins/EquationsPlugin";
@@ -57,6 +55,7 @@ import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
 // import { LayoutPlugin } from "./plugins/LayoutPlugin";
 // import ExcalidrawPlugin from "./plugins/ExcalidrawPlugin";
 // import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
+import { MarkdownShortcutPlugin } from "./plugins/MarkdownShortcut";
 
 const placeholder = "Enter some rich text...";
 

@@ -11,8 +11,7 @@ import React from "react";
 import FrontmatterComponent from "./FrontmatterComponent";
 import { basicSetup } from "codemirror";
 import { EditorView } from "@codemirror/view";
-import { yaml, yamlFrontmatter } from "@codemirror/lang-yaml";
-import { markdown } from "@codemirror/lang-markdown";
+import { yaml } from "@codemirror/lang-yaml";
 
 export class FrontmatterNode extends DecoratorNode {
   static getType() {
