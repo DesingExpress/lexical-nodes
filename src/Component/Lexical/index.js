@@ -56,6 +56,7 @@ import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
 // import ExcalidrawPlugin from "./plugins/ExcalidrawPlugin";
 // import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
 import { MarkdownShortcutPlugin } from "./plugins/MarkdownShortcut";
+import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 
 const placeholder = "Enter some rich text...";
 
@@ -149,7 +150,7 @@ const constructImportMap = () => {
   return importMap;
 };
 
-function Editor() {
+function Editor({ editorRef }) {
   const {
     settings: { isRichText },
   } = useSettings();
@@ -234,6 +235,7 @@ function Editor() {
               )}
               <InlineImagePlugin />
               <ImagesPlugin />
+              <EditorRefPlugin editorRef={editorRef} />
               {/* <SlashMenuPlugin anchorElem={floatingAnchorElem} /> */}
             </div>
           ) : (

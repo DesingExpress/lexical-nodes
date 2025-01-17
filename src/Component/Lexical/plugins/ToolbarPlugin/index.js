@@ -21,7 +21,11 @@ import {
   $isParentElementRTL,
   $patchStyleText,
 } from "@lexical/selection";
-import { $isTableNode, $isTableSelection } from "@lexical/table";
+import {
+  $isTableNode,
+  $isTableSelection,
+  INSERT_TABLE_COMMAND,
+} from "@lexical/table";
 import {
   $findMatchingParent,
   $getNearestNodeOfType,
@@ -367,6 +371,16 @@ function Divider() {
   return <div className="divider" />;
 }
 
+export function FillColumns() {
+  const columns = prompt("Enter the number of columns:", "");
+
+  if (columns !== null) {
+    return columns;
+  } else {
+    return String(0);
+  }
+}
+
 export default function ToolbarPlugin({
   editor,
   activeEditor,
@@ -632,6 +646,7 @@ export default function ToolbarPlugin({
   function md2lx() {
     editor.update(() => {
       const md = toolbarState.getCMText();
+      console.log(md);
       $convertFromMarkdownString(
         md,
         MUT_TRANSFORMERS.current,
@@ -640,6 +655,28 @@ export default function ToolbarPlugin({
       );
     });
   }
+
+  const onClick = (payload) => {
+    editor.dispatchCommand(INSERT_TABLE_COMMAND, payload);
+  };
+
+  const Fill = () => {
+    const rows = prompt("Enter the number of rows:", "");
+    const columns = prompt("Enter the number of columns:", "");
+
+    if (
+      isNaN(Number(columns)) ||
+      columns === null ||
+      rows === null ||
+      columns === "" ||
+      rows === "" ||
+      isNaN(Number(rows))
+    ) {
+      return;
+    }
+
+    onClick({ columns: columns, rows: rows });
+  };
 
   return (
     <div className="toolbar">
@@ -928,6 +965,9 @@ export default function ToolbarPlugin({
         type="button"
       >
         <EditIcon fontSize="inherit" className="format" />
+      </button>
+      <button onClick={() => Fill()} className="toolbar-item spaced">
+        <span className="text">Insert Table</span>
       </button>
       {modal}
     </div>
