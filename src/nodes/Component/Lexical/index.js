@@ -25,7 +25,10 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import defaultNodes from "./nodes";
 import { MarkdownShortcutPlugin } from "./plugins/test";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
-import { TablePlugin } from "src/Component/Lexical/plugins/TablePlugin/TablePlugin";
+import {
+  TableContext,
+  TablePlugin,
+} from "src/Component/Lexical/plugins/TablePlugin/TablePlugin";
 import { TableContentsPlugin } from "src/Component/Lexical/plugins/TablePlugin/TableContentsPlugin";
 // import ComponentPickerMenuPlugin from "src/Component/Lexical/plugins/ComponentPickerPlugin";
 // import AutoEmbedPlugin from "src/Component/Lexical/plugins/AutoEmbedPlugin";
@@ -35,6 +38,7 @@ import { TableContentsPlugin } from "src/Component/Lexical/plugins/TablePlugin/T
 // import PageBreakPlugin from "src/Component/Lexical/plugins/PageBreakPlugin";
 // import PollPlugin from "src/Component/Lexical/plugins/PollPlugin";
 import EquationsPlugin from "src/Component/Lexical/plugins/EquationsPlugin";
+import { ToolbarContext } from "src/Component/Lexical/context/ToolbarContext";
 
 const placeholder = "Enter some rich text...";
 
@@ -181,39 +185,13 @@ export default function Editor({ editorRef }) {
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="editor-container">
-        <ToolbarPlugin />
-        <div className="editor-inner">
-          <RichTextPlugin
-            contentEditable={
-              <ContentEditable
-                className="editor-input"
-                aria-placeholder={placeholder}
-                placeholder={
-                  <div className="editor-placeholder">{placeholder}</div>
-                }
-              />
-            }
-            ErrorBoundary={LexicalErrorBoundary}
-          />
-          <OnChangePlugin onChange={onChange} />
-          <HistoryPlugin />
-          <AutoFocusPlugin />
-          <TablePlugin />
-          <TableContentsPlugin />
-          <TabIndentationPlugin />
-          <ListPlugin />
-          <MarkdownShortcutPlugin />
-          {/* <ComponentPickerMenuPlugin />
-          <AutoEmbedPlugin />
-          <CollapsiblePlugin />
-          <ExcalidrawPlugin />
-          <LayoutPlugin />
-          <PageBreakPlugin />
-          <PollPlugin />
-          <CollapsiblePlugin /> */}
-          <EquationsPlugin />
-          <EditorRefPlugin editorRef={editorRef} />
-        </div>
+        <TableContext>
+          <ToolbarContext>
+            <div className="editor-inner">
+              <Editor editorRef={editorRef} />
+            </div>
+          </ToolbarContext>
+        </TableContext>
       </div>
     </LexicalComposer>
   );
