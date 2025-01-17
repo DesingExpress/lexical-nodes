@@ -69,7 +69,7 @@ import { InsertInlineImageDialog } from "../InlineImagePlugin";
 // import { INSERT_PAGE_BREAK } from "../PageBreakPlugin";
 // import { InsertPollDialog } from "../PollPlugin";
 import { SHORTCUTS } from "../ShortcutsPlugin/shortcuts";
-// import { InsertTableDialog } from "../TablePlugin";
+// import { InsertTableDialog } from "../TablePlugin/TablePlugin";
 import {
   clearFormatting,
   formatBulletList,
@@ -625,19 +625,25 @@ export default function ToolbarPlugin({
   const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption;
 
   function lx2md() {
-    editor.read(() => {
+    editor.update(() => {
       const markdown = $convertToMarkdownString(
         MUT_TRANSFORMERS.current,
         undefined, //node
-        true
+        false
       );
       toolbarState.setCMText(markdown);
     });
   }
+
   function md2lx() {
-    const md = toolbarState.getCMText();
     editor.update(() => {
-      $convertFromMarkdownString(md, MUT_TRANSFORMERS.current, undefined, true);
+      const md = toolbarState.getCMText();
+      $convertFromMarkdownString(
+        md,
+        MUT_TRANSFORMERS.current,
+        undefined,
+        false
+      );
     });
   }
 
