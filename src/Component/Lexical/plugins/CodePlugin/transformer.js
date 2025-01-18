@@ -1,7 +1,7 @@
 import { $createCodeNode, $isCodeNode, CodeNode } from "./node/CodeBlockNode";
 import { parse } from "../../utils/metaParser";
 
-const CODE_START_REGEX = /^[ \t]*```(?!rule[ \t])(\w+)?(?:[ \t]+(.*))?/;
+const CODE_START_REGEX = /^[ \t]*```(\w+)?(?:[ \t]+(.*))?/;
 const CODE_END_REGEX = /[ \t]*```$/;
 
 export const CODE = {
