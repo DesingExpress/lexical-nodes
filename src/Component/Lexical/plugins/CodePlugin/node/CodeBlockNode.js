@@ -77,6 +77,10 @@ export class CodeNode extends DecoratorNode {
     return element;
   }
 
+  updateDOM(prevNode) {
+    return false;
+  }
+
   remove(preserveEmptyParent) {
     if (this.__cm) this.__cm.destroy();
     return super.remove(preserveEmptyParent);
