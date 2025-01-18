@@ -13,10 +13,12 @@ export class lexicalNode extends Pure {
     //   window.Prism = Prism;
     //   console.log(window.Prism);
     // }
+    this.addInput("plugin", "lexical::plugin");
     this.addOutput("component", "component");
   }
 
   onExecute() {
-    this.setOutputData(1, <Editor />);
+    const plugins = this.getInputData(1) ?? {};
+    this.setOutputData(1, <Editor plugins={plugins} />);
   }
 }
