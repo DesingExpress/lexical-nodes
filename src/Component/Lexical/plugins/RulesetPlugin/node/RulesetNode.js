@@ -67,7 +67,7 @@ export class RulesetNode extends DecoratorNode {
   decorate() {
     return (
       <Suspense fallback={null}>
-        <RulesetComponent domEl={this.__cm.dom} meta={this.__meta} />
+        <RulesetComponent cm={this.__cm} meta={this.__meta} />
       </Suspense>
     );
   }

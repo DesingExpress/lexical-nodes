@@ -6,6 +6,7 @@ import {
   IconButton,
   ListItemText,
   Paper,
+  paperClasses,
   styled,
   TextField,
 } from "@mui/material";
@@ -16,30 +17,33 @@ import { grey } from "@mui/material/colors";
 import { useSlot } from "src/Component/Lexical/context/SlotContext";
 
 const RULESET_TITLE_REGEX = /^(\[[^[]+\])(?:\s*)?(.*)/;
-const StyledRulesetBlock = styled(Paper)(({ theme }) => ({
-  overflow: "hidden",
-  backgroundColor: grey[100],
-  [`& > .ruleset-title`]: {
-    backgroundColor: grey[300],
-    padding: theme.spacing(0, 1),
-    borderRadius: "4px 4px 0 0",
+const StyledRulesetBlock = styled(Badge)(({ theme }) => ({
+  display: "block",
+  [`& .${paperClasses.root}`]: {
+    overflow: "hidden",
+    backgroundColor: grey[100],
+    [`& > .ruleset-title`]: {
+      backgroundColor: grey[300],
+      padding: theme.spacing(0, 1),
+      borderRadius: "4px 4px 0 0",
 
-    [`& > form.editmode`]: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
-      padding: theme.spacing(1, 0),
-      [`& .${autocompleteClasses.root}`]: {
-        marginBottom: theme.spacing(1),
-        // width: 45,
-        // height: 45,
+      [`& > form.editmode`]: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        padding: theme.spacing(1, 0),
+        [`& .${autocompleteClasses.root}`]: {
+          marginBottom: theme.spacing(1),
+          // width: 45,
+          // height: 45,
+        },
       },
     },
   },
 }));
 
 export default function RulesetBlockComponent({
-  domEl,
+  cm,
   language,
   languageList,
   meta,
@@ -56,7 +60,8 @@ export default function RulesetBlockComponent({
     setEditMode(true);
   }
   function handleClickExecution() {
-    handleSlot(3, "test");
+    const result = cm.state.doc.toString() ?? "";
+    handleSlot(3, result);
     handleSlot(2);
   }
   function handleSubmit(e) {
@@ -86,12 +91,12 @@ export default function RulesetBlockComponent({
   }
   function handleChange(_, v) {}
   useLayoutEffect(() => {
-    ref.current.appendChild(domEl);
+    ref.current.appendChild(cm.dom);
   }, []);
 
   return (
-    <Badge badgeContent="new" color="primary" invisible={!isNew}>
-      <StyledRulesetBlock elevation={0}>
+    <StyledRulesetBlock badgeContent="new" color="primary" invisible={!isNew}>
+      <Paper className="wrapper" elevation={0}>
         <Paper className="ruleset-title" elevation={0}>
           {isEidtMode ? (
             <form className="editmode" onSubmit={handleSubmit}>
@@ -153,8 +158,8 @@ export default function RulesetBlockComponent({
           )}
         </Paper>
         <div ref={ref} />
-      </StyledRulesetBlock>
-    </Badge>
+      </Paper>
+    </StyledRulesetBlock>
   );
 }
 
