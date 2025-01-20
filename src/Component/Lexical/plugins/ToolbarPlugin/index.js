@@ -93,10 +93,12 @@ import FormatUnderlinedIcon from "@mui/icons-material/FormatUnderlined";
 import CodeIcon from "@mui/icons-material/Code";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
+import RawOnIcon from "@mui/icons-material/RawOn";
+import RawOffIcon from "@mui/icons-material/RawOff";
 import { ReactComponent as LowercaseIcon } from "../../../images/icons/type-lowercase.svg";
 import { ReactComponent as H1Icon } from "../../../images/icons/type-h1.svg";
 import { ReactComponent as ParagraphIcon } from "../../../images/icons/text-paragraph.svg";
+
 import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
@@ -395,6 +397,7 @@ export default function ToolbarPlugin({
   const [modal, showModal] = useModal();
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
   const { toolbarState, updateToolbarState } = useToolbarState();
+  const [isRaw, setRaw] = useState(false);
 
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -636,7 +639,8 @@ export default function ToolbarPlugin({
   const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption;
 
   function lx2md() {
-    editor.update(() => {
+    setRaw(true);
+    editor.read(() => {
       const markdown = $convertToMarkdownString(
         MUT_TRANSFORMERS.current,
         undefined, //node
@@ -647,6 +651,8 @@ export default function ToolbarPlugin({
   }
 
   function md2lx() {
+    setRaw(false);
+    const md = toolbarState.getCMText();
     editor.update(() => {
       const md = toolbarState.getCMText();
       console.log(md);
@@ -949,15 +955,19 @@ export default function ToolbarPlugin({
       <Divider />
       <button
         disabled={!isEditable}
-        onClick={lx2md}
+        onClick={isRaw ? md2lx : lx2md}
         className={"toolbar-item spaced "}
         aria-label="toggle edit on"
         title={`raw false`}
         type="button"
       >
-        <EditIcon fontSize="inherit" className="format" />
+        {isRaw ? (
+          <RawOnIcon fontSize="inherit" className="format" />
+        ) : (
+          <RawOffIcon fontSize="inherit" className="format" />
+        )}
       </button>
-      <button
+      {/* <button
         disabled={!isEditable}
         onClick={md2lx}
         className={"toolbar-item spaced "}
@@ -969,7 +979,7 @@ export default function ToolbarPlugin({
       </button>
       <button onClick={handleCreateTable} className="toolbar-item spaced">
         <span className="text">Insert Table</span>
-      </button>
+      </button> */}
       {modal}
     </div>
   );

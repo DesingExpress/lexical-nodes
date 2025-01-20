@@ -299,6 +299,7 @@ export default function Lexical({ plugins: _plugins }) {
   );
   const editorConfig = useMemo(
     () => ({
+      editable: true,
       html: {
         export: exportMap,
         import: constructImportMap(),

@@ -15,6 +15,7 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import { Fragment, useLayoutEffect, useRef, useState } from "react";
 import { grey } from "@mui/material/colors";
+
 const StyledCodeBlock = styled(Paper)(({ theme }) => ({
   overflow: "hidden",
   backgroundColor: grey[100],
@@ -52,16 +53,20 @@ const StyledCodeBlock = styled(Paper)(({ theme }) => ({
 }));
 
 export default function CodeBlockComponent({
-  domEl,
+  cm,
   language,
   languageList,
+  keymap: keymapConf,
   onUpdateLanguage,
   meta,
+  test,
   ...props
 }) {
   const ref = useRef();
   const [isEidtMode, setEditMode] = useState(false);
   const [title, setTitle] = useState(meta.title);
+
+  // const isEditable = useLexicalEditable();
 
   function handleClickEditMode() {
     setEditMode(true);
@@ -78,7 +83,7 @@ export default function CodeBlockComponent({
     onUpdateLanguage(v);
   }
   useLayoutEffect(() => {
-    ref.current.appendChild(domEl);
+    ref.current.appendChild(cm.dom);
   }, []);
 
   return (

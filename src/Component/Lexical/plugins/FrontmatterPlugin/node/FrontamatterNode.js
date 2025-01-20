@@ -6,12 +6,19 @@
  *
  */
 
-import { DecoratorNode } from "lexical";
+import {
+  $getNodeByKey,
+  $setSelection,
+  DecoratorNode,
+  REDO_COMMAND,
+  UNDO_COMMAND,
+} from "lexical";
 import React from "react";
 import FrontmatterComponent from "./FrontmatterComponent";
 import { basicSetup } from "codemirror";
-import { EditorView } from "@codemirror/view";
+import { EditorView, keymap } from "@codemirror/view";
 import { yaml } from "@codemirror/lang-yaml";
+import { Compartment, StateEffect } from "@codemirror/state";
 
 export class FrontmatterNode extends DecoratorNode {
   static getType() {
@@ -19,21 +26,48 @@ export class FrontmatterNode extends DecoratorNode {
   }
 
   static clone(node) {
-    return new FrontmatterNode(node.__yaml, node.__cm, node.__key);
+    return new FrontmatterNode(
+      node.__yaml,
+      node.__cm,
+      node.keymapConf,
+      node.__key
+    );
   }
 
-  constructor(code, codemirror, key) {
+  constructor(code, codemirror, keymapConf, key) {
     super(key);
+    this.keymapConf = keymapConf ?? new Compartment();
     this.__cm =
       codemirror ??
       this.__cm ??
       new EditorView({
         doc: code,
-        extensions: [basicSetup, yaml(), EditorView.lineWrapping],
+        extensions: [
+          basicSetup,
+          yaml(),
+          this.keymapConf.of([]),
+          EditorView.lineWrapping,
+        ],
       });
   }
 
-  createDOM(_config) {
+  createDOM(_config, editor) {
+    const __dummyEffect = StateEffect.define(undefined);
+    this.__cm.dispatch({
+      effects: this.keymapConf.reconfigure([
+        keymap.of(this.codeMirrorKeymap(editor)),
+        EditorView.focusChangeEffect.of((_, focusing) => {
+          if (focusing) {
+            console.log("aaa");
+            editor.update(() => {
+              $setSelection(null);
+            });
+          }
+          return __dummyEffect.of(undefined);
+        }),
+        // EditorView.updateListener.of((u) => this.forwardUpdate(u)),
+      ]),
+    });
     return document.createElement("div");
   }
 
@@ -50,6 +84,87 @@ export class FrontmatterNode extends DecoratorNode {
 
   decorate() {
     return <FrontmatterComponent domEl={this.__cm.dom} />;
+  }
+
+  codeMirrorKeymap = (editor) => {
+    // const view = this.view;
+    return [
+      {
+        key: "ArrowUp",
+        run: () => {
+          let res = false;
+          editor.update(() => {
+            res = this.maybeEscape("line", -1);
+            return false;
+          });
+          return res;
+        },
+      },
+      {
+        key: "ArrowLeft",
+        run: () => false,
+        // editor.getEditorState().read(() => this.maybeEscape("char", -1)),
+      },
+      {
+        key: "ArrowDown",
+        run: () => {
+          let res = false;
+          editor.update(() => {
+            res = this.maybeEscape("line", 1);
+            return false;
+          });
+          return res;
+        },
+      },
+      {
+        key: "ArrowRight",
+        run: () => false,
+        // editor.getEditorState().read(() => this.maybeEscape("char", 1)),
+      },
+      {
+        key: "Mod-z",
+        run: () => {
+          editor.dispatchCommand(UNDO_COMMAND, undefined);
+          return false;
+        },
+      },
+      {
+        key: "Shift-Mod-z",
+        run: () => {
+          editor.dispatchCommand(REDO_COMMAND, undefined);
+          return false;
+        },
+      },
+      {
+        key: "Mod-y",
+        run: () => {
+          editor.dispatchCommand(REDO_COMMAND, undefined);
+          return false;
+        },
+      },
+    ];
+  };
+
+  maybeEscape(unit, dir) {
+    const { state } = this.__cm;
+    let main = state.selection.main;
+    if (!main.empty) return false;
+
+    if (unit === "line") main = state.doc.lineAt(main.head);
+    if (dir < 0 ? main.from > 0 : main.to < state.doc.length) return false;
+
+    if (dir < 0) {
+      this.__cm.contentDOM.blur();
+      const prev = $getNodeByKey(this.__key).selectPrevious().clone();
+      $setSelection(prev.clone());
+    }
+
+    if (dir > 0) {
+      this.__cm.contentDOM.blur();
+      const prev = $getNodeByKey(this.__key).selectNext().clone();
+      $setSelection(prev.clone());
+    }
+    return true;
   }
 }
 

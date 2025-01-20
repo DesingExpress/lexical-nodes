@@ -6,7 +6,17 @@
  *
  */
 
-import { $applyNodeReplacement, DecoratorNode } from "lexical";
+import {
+  $applyNodeReplacement,
+  $createLineBreakNode,
+  $getNodeByKey,
+  $getPreviousSelection,
+  $getSelection,
+  $setSelection,
+  DecoratorNode,
+  REDO_COMMAND,
+  UNDO_COMMAND,
+} from "lexical";
 
 // import {
 //   $createCodeHighlightNode,
@@ -15,9 +25,9 @@ import { $applyNodeReplacement, DecoratorNode } from "lexical";
 // } from "./CodeHighlightNode";
 import { languages } from "@codemirror/language-data";
 import { lazy, Suspense } from "react";
-import { EditorView } from "@codemirror/view";
+import { EditorView, keymap } from "@codemirror/view";
 import { basicSetup } from "codemirror";
-import { Compartment } from "@codemirror/state";
+import { Compartment, StateEffect } from "@codemirror/state";
 
 const CodeBlockComponent = lazy(() => import("./CodeBlockComponent"));
 
@@ -44,16 +54,21 @@ export class CodeNode extends DecoratorNode {
     return new CodeNode(
       node.getLanguage(),
       node.getTextContent(),
-      { __cm: node.__cm, languageConf: node.languageConf, ...node.__meta },
+      {
+        __cm: node.__cm,
+        languageConf: node.languageConf,
+        keymapConf: node.keymapConf,
+        ...node.__meta,
+      },
       node.__key
     );
   }
 
   constructor(language, code, meta = {}, key) {
     super(key);
-    const { __cm, languageConf, ..._meta } = meta;
+    const { __cm, languageConf, keymapConf, ..._meta } = meta;
     this.languageConf = languageConf ?? new Compartment();
-
+    this.keymapConf = keymapConf ?? new Compartment();
     this.__cm =
       __cm ??
       this.__cm ??
@@ -62,6 +77,7 @@ export class CodeNode extends DecoratorNode {
         extensions: [
           basicSetup,
           this.languageConf.of([]),
+          this.keymapConf.of([]),
           EditorView.lineWrapping,
         ],
       });
@@ -70,10 +86,25 @@ export class CodeNode extends DecoratorNode {
   }
 
   // View
-  createDOM(config) {
+  createDOM(_, editor) {
+    const __dummyEffect = StateEffect.define(undefined);
     const element = document.createElement("div");
     element.className = "aasss";
-
+    this.__cm.dispatch({
+      effects: this.keymapConf.reconfigure([
+        keymap.of(this.codeMirrorKeymap(editor)),
+        EditorView.focusChangeEffect.of((_, focusing) => {
+          if (focusing) {
+            console.log("aaa");
+            editor.update(() => {
+              $setSelection(null);
+            });
+          }
+          return __dummyEffect.of(undefined);
+        }),
+        EditorView.updateListener.of((u) => this.forwardUpdate(u)),
+      ]),
+    });
     return element;
   }
 
@@ -90,105 +121,160 @@ export class CodeNode extends DecoratorNode {
     return (
       <Suspense fallback={null}>
         <CodeBlockComponent
-          domEl={this.__cm.dom}
+          cm={this.__cm}
           language={this.getLanguage()}
           languageList={languageList}
+          keymap={this.keymapConf}
           onUpdateLanguage={(v) => this.setLanguage(v)}
           meta={this.__meta}
+          test={this}
         />
       </Suspense>
     );
   }
 
-  // codeMirrorKeymap = ()=> {
-  //   const view = this.view
-  //   return [
-  //     { key: 'ArrowUp', run: () => this.maybeEscape('line', -1) },
-  //     { key: 'ArrowLeft', run: () => this.maybeEscape('char', -1) },
-  //     { key: 'ArrowDown', run: () => this.maybeEscape('line', 1) },
-  //     { key: 'ArrowRight', run: () => this.maybeEscape('char', 1) },
-  //     {
-  //       key: 'Mod-Enter',
-  //       run: () => {
-  //         if (!exitCode(view.state, view.dispatch)) return false
+  codeMirrorKeymap = (editor) => {
+    // const view = this.view;
+    return [
+      {
+        key: "ArrowUp",
+        run: () => {
+          let res = false;
+          editor.update(() => {
+            res = this.maybeEscape("line", -1);
+            return false;
+          });
+          return res;
+        },
+      },
+      {
+        key: "ArrowLeft",
+        run: () => false,
+        // editor.getEditorState().read(() => this.maybeEscape("char", -1)),
+      },
+      {
+        key: "ArrowDown",
+        run: () => {
+          let res = false;
+          editor.update(() => {
+            res = this.maybeEscape("line", 1);
+            return false;
+          });
+          return res;
+        },
+      },
+      {
+        key: "ArrowRight",
+        run: () => false,
+        // editor.getEditorState().read(() => this.maybeEscape("char", 1)),
+      },
+      // {
+      //   key: 'Mod-Enter',
+      //   run: () => {
+      //     if (!exitCode(view.state, view.dispatch)) return false
 
-  //         view.focus()
-  //         return true
-  //       },
-  //     },
-  //     { key: 'Mod-z', run: () => undo(view.state, view.dispatch) },
-  //     { key: 'Shift-Mod-z', run: () => redo(view.state, view.dispatch) },
-  //     { key: 'Mod-y', run: () => redo(view.state, view.dispatch) },
-  //     {
-  //       key: 'Backspace',
-  //       run: () => {
-  //         const ranges = this.cm.state.selection.ranges
+      //     view.focus()
+      //     return true
+      //   },
+      // },
+      {
+        key: "Mod-z",
+        run: () => {
+          editor.dispatchCommand(UNDO_COMMAND, undefined);
+          return false;
+        },
+      },
+      {
+        key: "Shift-Mod-z",
+        run: () => {
+          editor.dispatchCommand(REDO_COMMAND, undefined);
+          return false;
+        },
+      },
+      {
+        key: "Mod-y",
+        run: () => {
+          editor.dispatchCommand(REDO_COMMAND, undefined);
+          return false;
+        },
+      },
+      // {
+      //   key: 'Backspace',
+      //   run: () => {
+      //     const ranges = this.cm.state.selection.ranges
 
-  //         if (ranges.length > 1) return false
+      //     if (ranges.length > 1) return false
 
-  //         const selection = ranges[0]
+      //     const selection = ranges[0]
 
-  //         if (selection && (!selection.empty || selection.anchor > 0))
-  //           return false
+      //     if (selection && (!selection.empty || selection.anchor > 0))
+      //       return false
 
-  //         if (this.cm.state.doc.lines >= 2) return false
+      //     if (this.cm.state.doc.lines >= 2) return false
 
-  //         const state = this.view.state
-  //         const pos = this.getPos() ?? 0
-  //         const tr = state.tr.replaceWith(
-  //           pos,
-  //           pos + this.node.nodeSize,
-  //           state.schema.nodes.paragraph?.createChecked({}, this.node.content)
-  //         )
+      //     const state = this.view.state
+      //     const pos = this.getPos() ?? 0
+      //     const tr = state.tr.replaceWith(
+      //       pos,
+      //       pos + this.node.nodeSize,
+      //       state.schema.nodes.paragraph?.createChecked({}, this.node.content)
+      //     )
 
-  //         tr.setSelection(TextSelection.near(tr.doc.resolve(pos)))
+      //     tr.setSelection(TextSelection.near(tr.doc.resolve(pos)))
 
-  //         this.view.dispatch(tr)
-  //         this.view.focus()
-  //         return true
-  //       },
-  //     },
-  //   ]
-  // }
+      //     this.view.dispatch(tr)
+      //     this.view.focus()
+      //     return true
+      //   },
+      // },
+    ];
+  };
 
-  //  maybeEscape = (unit, dir) => {
-  //   const { state } = this.cm
-  //   let main = state.selection.main
-  //   if (!main.empty) return false
-  //   if (unit === 'line') main = state.doc.lineAt(main.head)
-  //   if (dir < 0 ? main.from > 0 : main.to < state.doc.length) return false
+  maybeEscape(unit, dir) {
+    const { state } = this.__cm;
+    let main = state.selection.main;
+    if (!main.empty) return false;
 
-  //   const targetPos = (this.getPos() ?? 0) + (dir < 0 ? 0 : this.node.nodeSize)
-  //   const selection = TextSelection.near(
-  //     this.view.state.doc.resolve(targetPos),
-  //     dir
-  //   )
-  //   const tr = this.view.state.tr.setSelection(selection).scrollIntoView()
-  //   this.view.dispatch(tr)
-  //   this.view.focus()
-  //   return true
-  // }
+    if (unit === "line") main = state.doc.lineAt(main.head);
+    if (dir < 0 ? main.from > 0 : main.to < state.doc.length) return false;
 
-  // setSelection = (anchor, head) => {
-  //   if (!this.cm.dom.isConnected) return;
+    if (dir < 0) {
+      this.__cm.contentDOM.blur();
+      const prev = $getNodeByKey(this.__key).selectPrevious().clone();
+      $setSelection(prev.clone());
+    }
 
-  //   this.cm.focus();
-  //   this.updating = true;
-  //   this.cm.dispatch({ selection: { anchor, head } });
-  //   this.updating = false;
-  // };
+    if (dir > 0) {
+      this.__cm.contentDOM.blur();
+      const prev = $getNodeByKey(this.__key).selectNext().clone();
+      $setSelection(prev.clone());
+    }
+    return true;
+  }
 
-  // canIndent() {
-  //   return false;
-  // }
-
-  // collapseAtStart() {
-  //   const paragraph = $createParagraphNode();
-  //   const children = this.getChildren();
-  //   children.forEach((child) => paragraph.append(child));
-  //   this.replace(paragraph);
-  //   return true;
-  // }
+  forwardUpdate(update) {
+    // if (!this.__cm.hasFocus) return;
+    // let offset = 1;
+    // const { main } = update.state.selection;
+    // const selFrom = offset + main.from;
+    // const selTo = offset + main.to;
+    // console.log(selFrom, selTo);
+    // // if (update.docChanged ) {
+    // //   const tr = this.view.state.tr
+    // //   update.changes.iterChanges((fromA, toA, fromB, toB, text) => {
+    // //     if (text.length)
+    // //       tr.replaceWith(
+    // //         offset + fromA,
+    // //         offset + toA,
+    // //         this.view.state.schema.text(text.toString())
+    // //       )
+    // //     else tr.delete(offset + fromA, offset + toA)
+    // //     offset += toB - fromB - (toA - fromA)
+    // //   })
+    // //   tr.setSelection(TextSelection.create(tr.doc, selFrom, selTo))
+    // //   this.view.dispatch(tr)
+    // // }
+  }
 
   setLanguage(value) {
     if (typeof value !== "string") return false;
@@ -225,6 +311,16 @@ export class CodeNode extends DecoratorNode {
     return Object.entries(this.__meta)
       .map(([k, v]) => `${k}="${v}"`)
       .join(" ");
+  }
+
+  isInline() {
+    return true;
+  }
+  isIsolated() {
+    return false;
+  }
+  isKeyboardSelectable() {
+    return true;
   }
 }
 
