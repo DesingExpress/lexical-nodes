@@ -6,7 +6,7 @@
  *
  */
 
-import "./index.css";
+// import "./index.css";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
 import {

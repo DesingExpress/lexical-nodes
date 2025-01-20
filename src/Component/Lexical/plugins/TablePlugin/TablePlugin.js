@@ -23,10 +23,6 @@ import {
   $isRootOrShadowRoot,
   $setSelection,
   COMMAND_PRIORITY_EDITOR,
-  EditorThemeClasses,
-  Klass,
-  LexicalEditor,
-  LexicalNode,
 } from "lexical";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import invariant from "../../shared/invariant";
@@ -169,10 +165,6 @@ export function TablePlugin({ cellEditorConfig, children }) {
       COMMAND_PRIORITY_EDITOR
     );
   }, [cellContext, cellEditorConfig, children, editor]);
-
-  // useEffect(() => {
-  //   cellContext.set(cellEditorConfig, children);
-  // }, [cellContext, cellEditorConfig, children]);
 
   return null;
 }
