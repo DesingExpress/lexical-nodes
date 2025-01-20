@@ -57,6 +57,7 @@ import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
 // import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
 import { MarkdownShortcutPlugin } from "./plugins/MarkdownShortcut";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
+import combineContexts from "./utils/combineContext";
 
 const placeholder = "Enter some rich text...";
 
@@ -150,7 +151,7 @@ const constructImportMap = () => {
   return importMap;
 };
 
-function Editor({ editorRef }) {
+function Editor({ plugins, shortcuts, editorRef }) {
   const {
     settings: { isRichText },
   } = useSettings();
@@ -200,7 +201,9 @@ function Editor({ editorRef }) {
               <TabIndentationPlugin maxIndent={0} />
               <TabFocusPlugin />
               <ListPlugin />
-              <MarkdownShortcutPlugin plugins={[EQUATION, CODE, FRONTMATTER]} />
+              <MarkdownShortcutPlugin
+                plugins={[...shortcuts, EQUATION, CODE, FRONTMATTER]}
+              />
               <EquationsPlugin />
               <HorizontalRulePlugin />
               <TablePlugin />
@@ -236,6 +239,14 @@ function Editor({ editorRef }) {
               <InlineImagePlugin />
               <ImagesPlugin />
               <EditorRefPlugin editorRef={editorRef} />
+              {plugins.map((T) => (
+                <T
+                  anchorElem={floatingAnchorElem}
+                  editor={editor}
+                  activeEditor={activeEditor}
+                  externalHistoryState={historyState}
+                />
+              ))}
               {/* <SlashMenuPlugin anchorElem={floatingAnchorElem} /> */}
             </div>
           ) : (
@@ -264,7 +275,17 @@ function Editor({ editorRef }) {
   );
 }
 
-export default function Lexical() {
+export default function Lexical({ plugins: _plugins }) {
+  const {
+    plugins = [],
+    nodes = [],
+    shortcuts = [],
+    contexts = [],
+  } = useMemo(() => _plugins, [_plugins]);
+  const LexicalProvider = useMemo(
+    () => combineContexts(SharedHistoryContext, ToolbarContext, ...contexts),
+    [contexts]
+  );
   const editorConfig = useMemo(
     () => ({
       html: {
@@ -272,7 +293,7 @@ export default function Lexical() {
         import: constructImportMap(),
       },
       namespace: "React.js Demo",
-      nodes: [...defaultNodes],
+      nodes: [...nodes, ...defaultNodes],
       onError(error) {
         throw error;
       },
@@ -284,19 +305,17 @@ export default function Lexical() {
     <ThemeProvider theme={theme}>
       <SettingsContext>
         <LexicalComposer initialConfig={editorConfig}>
-          <SharedHistoryContext>
-            <ToolbarContext>
-              <div
-                style={{
-                  overflow: "hidden auto",
-                  height: "100%",
-                  width: "100%",
-                }}
-              >
-                <Editor />
-              </div>
-            </ToolbarContext>
-          </SharedHistoryContext>
+          <LexicalProvider>
+            <div
+              style={{
+                overflow: "hidden auto",
+                height: "100%",
+                width: "100%",
+              }}
+            >
+              <Editor plugins={plugins} shortcuts={shortcuts} />
+            </div>
+          </LexicalProvider>
         </LexicalComposer>
       </SettingsContext>
     </ThemeProvider>

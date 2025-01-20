@@ -53,7 +53,7 @@ import brokenImage from "../../../../images/image-broken.svg";
 // import ImageResizer from "../ui/ImageResizer";
 // import { EmojiNode } from "./EmojiNode";
 import { $isImageNode } from "../nodes/ImageNode";
-import { useSharedHistoryContext } from "src/Component/Lexical/context/SharedHistoryContext";
+import { useSharedHistoryContext } from "../../../context/SharedHistoryContext";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import ImageResizer from "./ImageResizer";
