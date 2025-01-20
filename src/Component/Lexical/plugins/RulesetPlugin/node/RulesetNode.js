@@ -6,13 +6,13 @@
  *
  */
 
-import { $applyNodeReplacement, DecoratorNode } from "lexical";
+import { $applyNodeReplacement, $getNodeByKey, $setSelection, DecoratorNode, REDO_COMMAND, UNDO_COMMAND } from "lexical";
 
 import { lazy, Suspense } from "react";
-import { EditorView } from "@codemirror/view";
+import { EditorView, keymap } from "@codemirror/view";
 import { basicSetup } from "codemirror";
 import { languages } from "@codemirror/language-data";
-import { Compartment } from "@codemirror/state";
+import { Compartment, StateEffect } from "@codemirror/state";
 
 const RulesetComponent = lazy(() => import("./RulesetComponent"));
 
@@ -25,14 +25,15 @@ export class RulesetNode extends DecoratorNode {
   static clone(node) {
     return new RulesetNode(
       node.getTextContent(),
-      { __cm: node.__cm, ...node.__meta },
+      { __cm: node.__cm, keymapConf: node.keymapConf, ...node.__meta },
       node.__key
     );
   }
 
   constructor(code, meta = {}, key) {
     super(key);
-    const { __cm, languageConf, ..._meta } = meta;
+    const { __cm, languageConf, keymapConf, ..._meta } = meta;
+    this.keymapConf = keymapConf ?? new Compartment();
     this.languageConf = languageConf ?? new Compartment();
     this.__cm =
       __cm ??
@@ -42,6 +43,7 @@ export class RulesetNode extends DecoratorNode {
         extensions: [
           basicSetup,
           this.languageConf.of([]),
+          this.keymapConf.of([]),
           EditorView.lineWrapping,
         ],
       });
@@ -50,8 +52,24 @@ export class RulesetNode extends DecoratorNode {
   }
 
   // View
-  createDOM(config) {
+  createDOM(config, editor) {
+    const __dummyEffect = StateEffect.define(undefined);
     const element = document.createElement("div");
+    this.__cm.dispatch({
+      effects: this.keymapConf.reconfigure([
+        keymap.of(this.codeMirrorKeymap(editor)),
+        EditorView.focusChangeEffect.of((_, focusing) => {
+          if (focusing) {
+            console.log("aaa");
+            editor.update(() => {
+              $setSelection(null);
+            });
+          }
+          return __dummyEffect.of(undefined);
+        }),
+        // EditorView.updateListener.of((u) => this.forwardUpdate(u)),
+      ]),
+    });
     return element;
   }
 
@@ -99,6 +117,86 @@ export class RulesetNode extends DecoratorNode {
       });
     });
     return false;
+  }
+  codeMirrorKeymap = (editor) => {
+    // const view = this.view;
+    return [
+      {
+        key: "ArrowUp",
+        run: () => {
+          let res = false;
+          editor.update(() => {
+            res = this.maybeEscape("line", -1);
+            return false;
+          });
+          return res;
+        },
+      },
+      {
+        key: "ArrowLeft",
+        run: () => false,
+        // editor.getEditorState().read(() => this.maybeEscape("char", -1)),
+      },
+      {
+        key: "ArrowDown",
+        run: () => {
+          let res = false;
+          editor.update(() => {
+            res = this.maybeEscape("line", 1);
+            return false;
+          });
+          return res;
+        },
+      },
+      {
+        key: "ArrowRight",
+        run: () => false,
+        // editor.getEditorState().read(() => this.maybeEscape("char", 1)),
+      },
+      {
+        key: "Mod-z",
+        run: () => {
+          editor.dispatchCommand(UNDO_COMMAND, undefined);
+          return false;
+        },
+      },
+      {
+        key: "Shift-Mod-z",
+        run: () => {
+          editor.dispatchCommand(REDO_COMMAND, undefined);
+          return false;
+        },
+      },
+      {
+        key: "Mod-y",
+        run: () => {
+          editor.dispatchCommand(REDO_COMMAND, undefined);
+          return false;
+        },
+      },
+    ];
+  };
+
+  maybeEscape(unit, dir) {
+    const { state } = this.__cm;
+    let main = state.selection.main;
+    if (!main.empty) return false;
+
+    if (unit === "line") main = state.doc.lineAt(main.head);
+    if (dir < 0 ? main.from > 0 : main.to < state.doc.length) return false;
+
+    if (dir < 0) {
+      this.__cm.contentDOM.blur();
+      const prev = $getNodeByKey(this.__key).selectPrevious().clone();
+      $setSelection(prev.clone());
+    }
+
+    if (dir > 0) {
+      this.__cm.contentDOM.blur();
+      const prev = $getNodeByKey(this.__key).selectNext().clone();
+      $setSelection(prev.clone());
+    }
+    return true;
   }
 }
 
