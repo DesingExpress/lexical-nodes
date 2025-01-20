@@ -21,6 +21,10 @@ export const isDevPlayground =
 
 export const DEFAULT_SETTINGS = {
   isRichText: true,
+  shouldPreserveNewLinesInMarkdown: false,
+  tableCellMerge: true,
+  tableCellBackgroundColor: true,
+  tableHorizontalScroll: true,
 };
 
 // These are mutated in setupEnv

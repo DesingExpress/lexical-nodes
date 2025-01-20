@@ -46,7 +46,7 @@ import TestRawEditor from "./TestRawEditor";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FRONTMATTER } from "./plugins/FrontmatterPlugin/transformer";
 import { TablePlugin } from "./plugins/TablePlugin/TablePlugin";
-import TableActionMenuPlugin from "./plugins/TablePlugin/TableActionMenuPlugin";
+import TableCellActionMenuPlugin from "./plugins/TablePlugin/TableActionMenuPlugin";
 import TableHoverActionsPlugin from "./plugins/TablePlugin/TableHoverActionsPlugin";
 import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
 // import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
@@ -58,6 +58,7 @@ import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
 import { MarkdownShortcutPlugin } from "./plugins/MarkdownShortcut";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import combineContexts from "./utils/combineContext";
+import TableCellResizerPlugin from "./plugins/TablePlugin/TableCellResizer";
 
 const placeholder = "Enter some rich text...";
 
@@ -153,7 +154,13 @@ const constructImportMap = () => {
 
 function Editor({ plugins, shortcuts, editorRef }) {
   const {
-    settings: { isRichText },
+    settings: {
+      isRichText,
+      shouldPreserveNewLinesInMarkdown,
+      tableCellMerge,
+      tableCellBackgroundColor,
+      tableHorizontalScroll,
+    },
   } = useSettings();
   const { historyState } = useSharedHistoryContext();
 
@@ -166,6 +173,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
       setFloatingAnchorElem(_floatingAnchorElem);
     }
   };
+
   return (
     <Fragment>
       <div className="editor-shell">
@@ -174,6 +182,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
           activeEditor={activeEditor}
           setActiveEditor={setActiveEditor}
           setIsLinkEditMode={setIsLinkEditMode}
+          shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
         />
         <div className="editor-container">
           <AutoFocusPlugin />
@@ -206,10 +215,12 @@ function Editor({ plugins, shortcuts, editorRef }) {
               />
               <EquationsPlugin />
               <HorizontalRulePlugin />
-              <TablePlugin />
-              <TableOfContentsPlugin />
-              <TableActionMenuPlugin />
-              <TableHoverActionsPlugin />
+              <TablePlugin
+                hasCellMerge={tableCellMerge}
+                hasCellBackgroundColor={tableCellBackgroundColor}
+                hasHorizontalScroll={tableHorizontalScroll}
+              />
+              {/* <TableCellResizerPlugin /> */}
               {/* <AutoEmbedPlugin />
               <CollapsiblePlugin />
               <ExcalidrawPlugin />
@@ -225,11 +236,11 @@ function Editor({ plugins, shortcuts, editorRef }) {
                   isLinkEditMode={isLinkEditMode}
                   setIsLinkEditMode={setIsLinkEditMode}
                 /> */}
-                  {/* <TableCellActionMenuPlugin
-                  anchorElem={floatingAnchorElem}
-                  cellMerge={true}
-                /> */}
-                  {/* <TableHoverActionsPlugin anchorElem={floatingAnchorElem} /> */}
+                  <TableCellActionMenuPlugin
+                    anchorElem={floatingAnchorElem}
+                    cellMerge={true}
+                  />
+                  <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
                   <FloatingTextFormatToolbarPlugin
                     anchorElem={floatingAnchorElem}
                     setIsLinkEditMode={setIsLinkEditMode}
@@ -254,7 +265,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
               <PlainTextPlugin
                 contentEditable={
                   <ContentEditable
-                    className={"ContentEditable__root"}
+                    className={"ContentEditable__root plain"}
                     aria-placeholder={placeholder}
                     placeholder={
                       <div className={"ContentEditable__placeholder"}>

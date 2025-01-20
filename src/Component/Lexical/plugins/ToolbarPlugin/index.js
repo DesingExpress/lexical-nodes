@@ -34,7 +34,9 @@ import {
   mergeRegister,
 } from "@lexical/utils";
 import {
+  $createTextNode,
   $getNodeByKey,
+  $getRoot,
   $getSelection,
   $isElementNode,
   $isRangeSelection,
@@ -101,6 +103,7 @@ import {
 } from "#/@lexical/markdown/index.js";
 import { $getFrontmatter } from "../../utils/getMetaData";
 import { MUT_TRANSFORMERS } from "../MarkdownShortcut";
+import { $createCodeNode, $isCodeNode } from "../CodePlugin/node/CodeBlockNode";
 
 function dropDownActiveClass(active) {
   if (active) {
@@ -386,6 +389,7 @@ export default function ToolbarPlugin({
   activeEditor,
   setActiveEditor,
   setIsLinkEditMode,
+  shouldPreserveNewLinesInMarkdown,
 }) {
   const [selectedElementKey, setSelectedElementKey] = useState(null);
   const [modal, showModal] = useModal();
@@ -636,10 +640,9 @@ export default function ToolbarPlugin({
       const markdown = $convertToMarkdownString(
         MUT_TRANSFORMERS.current,
         undefined, //node
-        false
+        shouldPreserveNewLinesInMarkdown
       );
       toolbarState.setCMText(markdown);
-      console.log($getFrontmatter());
     });
   }
 
@@ -650,17 +653,13 @@ export default function ToolbarPlugin({
       $convertFromMarkdownString(
         md,
         MUT_TRANSFORMERS.current,
-        undefined,
-        false
+        undefined, //node
+        shouldPreserveNewLinesInMarkdown
       );
     });
   }
 
-  const onClick = (payload) => {
-    editor.dispatchCommand(INSERT_TABLE_COMMAND, payload);
-  };
-
-  const Fill = () => {
+  function handleCreateTable() {
     const rows = prompt("Enter the number of rows:", "");
     const columns = prompt("Enter the number of columns:", "");
 
@@ -674,9 +673,11 @@ export default function ToolbarPlugin({
     ) {
       return;
     }
-
-    onClick({ columns: columns, rows: rows });
-  };
+    editor.dispatchCommand(INSERT_TABLE_COMMAND, {
+      columns: columns,
+      rows: rows,
+    });
+  }
 
   return (
     <div className="toolbar">
@@ -966,7 +967,7 @@ export default function ToolbarPlugin({
       >
         <EditIcon fontSize="inherit" className="format" />
       </button>
-      <button onClick={() => Fill()} className="toolbar-item spaced">
+      <button onClick={handleCreateTable} className="toolbar-item spaced">
         <span className="text">Insert Table</span>
       </button>
       {modal}
