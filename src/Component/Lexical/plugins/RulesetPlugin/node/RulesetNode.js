@@ -6,7 +6,14 @@
  *
  */
 
-import { $applyNodeReplacement, $getNodeByKey, $setSelection, DecoratorNode, REDO_COMMAND, UNDO_COMMAND } from "lexical";
+import {
+  $applyNodeReplacement,
+  $getNodeByKey,
+  $setSelection,
+  DecoratorNode,
+  REDO_COMMAND,
+  UNDO_COMMAND,
+} from "lexical";
 
 import { lazy, Suspense } from "react";
 import { EditorView, keymap } from "@codemirror/view";
@@ -103,6 +110,11 @@ export class RulesetNode extends DecoratorNode {
       .map(([k, v]) => `${k}="${v}"`)
       .join(" ");
   }
+
+  getRawMeta() {
+    return this.__meta;
+  }
+
   setLanguage() {
     const language = languages.find((i) => i.name === "PostgreSQL");
 
