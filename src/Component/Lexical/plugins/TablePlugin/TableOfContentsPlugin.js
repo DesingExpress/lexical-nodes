@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
+import "./TableOfContentsPlugin.css";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { TableOfContentsPlugin as LexicalTableOfContentsPlugin } from "@lexical/react/LexicalTableOfContentsPlugin";
 import { useEffect, useRef, useState } from "react";
@@ -46,7 +47,7 @@ function TableOfContentsList({ tableOfContents }) {
     editor.getEditorState().read(() => {
       const domElement = editor.getElementByKey(key);
       if (domElement !== null) {
-        domElement.scrollIntoView();
+        domElement.scrollIntoView({ behavior: "smooth", block: "center" });
         setSelectedKey(key);
         selectedIndex.current = currIndex;
       }

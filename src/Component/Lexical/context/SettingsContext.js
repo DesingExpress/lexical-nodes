@@ -21,6 +21,7 @@ export const isDevPlayground =
 
 export const DEFAULT_SETTINGS = {
   isRichText: true,
+  showTableOfContents: false,
   shouldPreserveNewLinesInMarkdown: false,
   tableCellMerge: true,
   tableCellBackgroundColor: true,

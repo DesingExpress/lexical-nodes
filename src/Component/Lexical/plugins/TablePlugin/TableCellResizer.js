@@ -37,16 +37,16 @@ const MIN_ROW_HEIGHT = 33;
 const MIN_COLUMN_WIDTH = 92;
 
 function TableCellResizer({ editor }) {
-  const targetRef = useRef | null;
-  const resizerRef = useRef | null;
-  const tableRectRef = useRef | null;
+  const targetRef = useRef(null);
+  const resizerRef = useRef(null);
+  const tableRectRef = useRef(null);
 
-  const mouseStartPosRef = useRef | null;
-  const [mouseCurrentPos, updateMouseCurrentPos] = useState | null;
+  const mouseStartPosRef = useRef(null);
+  const [mouseCurrentPos, updateMouseCurrentPos] = useState(null);
 
-  const [activeCell, updateActiveCell] = useState | null;
+  const [activeCell, updateActiveCell] = useState(null);
   const [isMouseDown, updateIsMouseDown] = useState(false);
-  const [draggingDirection, updateDraggingDirection] = useState | null;
+  const [draggingDirection, updateDraggingDirection] = useState(null);
 
   const resetState = useCallback(() => {
     updateActiveCell(null);

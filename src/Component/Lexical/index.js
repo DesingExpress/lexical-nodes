@@ -156,6 +156,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
   const {
     settings: {
       isRichText,
+      showTableOfContents,
       shouldPreserveNewLinesInMarkdown,
       tableCellMerge,
       tableCellBackgroundColor,
@@ -220,7 +221,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
                 hasCellBackgroundColor={tableCellBackgroundColor}
                 hasHorizontalScroll={tableHorizontalScroll}
               />
-              {/* <TableCellResizerPlugin /> */}
+              <TableCellResizerPlugin />
               {/* <AutoEmbedPlugin />
               <CollapsiblePlugin />
               <ExcalidrawPlugin />
@@ -279,6 +280,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
               <HistoryPlugin externalHistoryState={historyState} />
             </>
           )}
+          <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
         </div>
       </div>
       <TestRawEditor />
