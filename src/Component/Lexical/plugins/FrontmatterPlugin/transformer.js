@@ -13,7 +13,7 @@ export const FRONTMATTER = {
       return null;
     }
     const textContent = node.getTextContent();
-    return "---" + (textContent ? "\n" + textContent : "") + "\n" + "---";
+    return "---" + (textContent ? "\n" + textContent : "") + "\n---";
   },
   regExpEnd: FRONTMATTER_REGEX,
   regExpStart: FRONTMATTER_REGEX,
