@@ -22,6 +22,7 @@ import {
   $patchStyleText,
 } from "@lexical/selection";
 import {
+  $createTableNodeWithDimensions,
   $isTableNode,
   $isTableSelection,
   INSERT_TABLE_COMMAND,
@@ -34,6 +35,7 @@ import {
   mergeRegister,
 } from "@lexical/utils";
 import {
+  $createParagraphNode,
   $createTextNode,
   $getNodeByKey,
   $getRoot,
@@ -640,7 +642,7 @@ export default function ToolbarPlugin({
 
   function lx2md() {
     setRaw(true);
-    editor.read(() => {
+    editor.update(() => {
       const markdown = $convertToMarkdownString(
         MUT_TRANSFORMERS.current,
         undefined, //node
@@ -653,9 +655,8 @@ export default function ToolbarPlugin({
   function md2lx() {
     setRaw(false);
     const md = toolbarState.getCMText();
+
     editor.update(() => {
-      const md = toolbarState.getCMText();
-      console.log(md);
       $convertFromMarkdownString(
         md,
         MUT_TRANSFORMERS.current,
@@ -665,25 +666,25 @@ export default function ToolbarPlugin({
     });
   }
 
-  function handleCreateTable() {
-    const rows = prompt("Enter the number of rows:", "");
-    const columns = prompt("Enter the number of columns:", "");
+  // function handleCreateTable() {
+  //   const rows = prompt("Enter the number of rows:", "");
+  //   const columns = prompt("Enter the number of columns:", "");
 
-    if (
-      isNaN(Number(columns)) ||
-      columns === null ||
-      rows === null ||
-      columns === "" ||
-      rows === "" ||
-      isNaN(Number(rows))
-    ) {
-      return;
-    }
-    editor.dispatchCommand(INSERT_TABLE_COMMAND, {
-      columns: columns,
-      rows: rows,
-    });
-  }
+  //   if (
+  //     isNaN(Number(columns)) ||
+  //     columns === null ||
+  //     rows === null ||
+  //     columns === "" ||
+  //     rows === "" ||
+  //     isNaN(Number(rows))
+  //   ) {
+  //     return;
+  //   }
+  //   editor.dispatchCommand(INSERT_TABLE_COMMAND, {
+  //     columns: columns,
+  //     rows: rows,
+  //   });
+  // }
 
   return (
     <div className="toolbar">
@@ -956,7 +957,7 @@ export default function ToolbarPlugin({
       <button
         disabled={!isEditable}
         onClick={isRaw ? md2lx : lx2md}
-        className={"toolbar-item spaced "}
+        className="toolbar-item spaced "
         aria-label="toggle edit on"
         title={`raw false`}
         type="button"
