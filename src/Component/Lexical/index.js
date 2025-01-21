@@ -66,6 +66,7 @@ import { useLitegraphSlot } from "./context/litegraphContext";
 import { $getFrontmatter } from "./utils/getMetaData";
 import { $getQueris } from "./utils/getQueris";
 import { $convertToMarkdownString } from "#/@lexical/markdown/index.js";
+import { TABLE } from "./plugins/TablePlugin/transformer";
 const placeholder = "Enter some rich text...";
 
 const removeStylesExportDOM = (editor, target) => {
@@ -240,7 +241,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
               <TabFocusPlugin />
               <ListPlugin />
               <MarkdownShortcutPlugin
-                plugins={[...shortcuts, EQUATION, CODE, FRONTMATTER]}
+                plugins={[...shortcuts, EQUATION, CODE, FRONTMATTER, TABLE]}
               />
               <EquationsPlugin />
               <HorizontalRulePlugin />

@@ -9,20 +9,7 @@
 import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
-  CHECK_LIST,
-  ELEMENT_TRANSFORMERS,
-  ElementTransformer,
-  MULTILINE_ELEMENT_TRANSFORMERS,
-  TEXT_FORMAT_TRANSFORMERS,
-  TEXT_MATCH_TRANSFORMERS,
-  TextMatchTransformer,
-  Transformer,
-} from "@lexical/markdown";
-import {
-  $createHorizontalRuleNode,
-  $isHorizontalRuleNode,
-  HorizontalRuleNode,
-} from "@lexical/react/LexicalHorizontalRuleNode";
+} from "#/@lexical/markdown/index.js";
 import {
   $createTableCellNode,
   $createTableNode,
@@ -35,128 +22,14 @@ import {
   TableNode,
   TableRowNode,
 } from "@lexical/table";
-import {
-  $createTextNode,
-  $isParagraphNode,
-  $isTextNode,
-  LexicalNode,
-} from "lexical";
+import { $isParagraphNode, $isTextNode } from "lexical";
 
-import {
-  $createEquationNode,
-  $isEquationNode,
-  EquationNode,
-} from "../EquationsPlugin/node/EquationNode";
-import {
-  $createImageNode,
-  $isImageNode,
-  ImageNode,
-} from "../ImagesPlugin/nodes/ImageNode";
 // import {
 //   $createTweetNode,
 //   $isTweetNode,
 //   TweetNode,
 // } from "../../nodes/TweetNode";
-import emojiList from "../../utils/emoji-list";
 import { MUT_TRANSFORMERS } from "../MarkdownShortcut";
-
-export const HR = {
-  dependencies: [HorizontalRuleNode],
-  export: (node) => {
-    return $isHorizontalRuleNode(node) ? "***" : null;
-  },
-  regExp: /^(---|\*\*\*|___)\s?$/,
-  replace: (parentNode, _1, _2, isImport) => {
-    const line = $createHorizontalRuleNode();
-
-    // TODO: Get rid of isImport flag
-    if (isImport || parentNode.getNextSibling() != null) {
-      parentNode.replace(line);
-    } else {
-      parentNode.insertBefore(line);
-    }
-
-    line.selectNext();
-  },
-  type: "element",
-};
-
-export const IMAGE = {
-  dependencies: [ImageNode],
-  export: (node) => {
-    if (!$isImageNode(node)) {
-      return null;
-    }
-
-    return `![${node.getAltText()}](${node.getSrc()})`;
-  },
-  importRegExp: /!(?:\[([^[]*)\])(?:\(([^(]+)\))/,
-  regExp: /!(?:\[([^[]*)\])(?:\(([^(]+)\))$/,
-  replace: (textNode, match) => {
-    const [, altText, src] = match;
-    const imageNode = $createImageNode({
-      altText,
-      maxWidth: 800,
-      src,
-    });
-    textNode.replace(imageNode);
-  },
-  trigger: ")",
-  type: "text-match",
-};
-
-export const EMOJI = {
-  dependencies: [],
-  export: () => null,
-  importRegExp: /:([a-z0-9_]+):/,
-  regExp: /:([a-z0-9_]+):$/,
-  replace: (textNode, [, name]) => {
-    const emoji = emojiList.find((e) => e.aliases.includes(name))?.emoji;
-    if (emoji) {
-      textNode.replace($createTextNode(emoji));
-    }
-  },
-  trigger: ":",
-  type: "text-match",
-};
-
-export const EQUATION = {
-  dependencies: [EquationNode],
-  export: (node) => {
-    if (!$isEquationNode(node)) {
-      return null;
-    }
-
-    return `$${node.getEquation()}$`;
-  },
-  importRegExp: /\$([^$]+?)\$/,
-  regExp: /\$([^$]+?)\$$/,
-  replace: (textNode, match) => {
-    const [, equation] = match;
-    const equationNode = $createEquationNode(equation, true);
-    textNode.replace(equationNode);
-  },
-  trigger: "$",
-  type: "text-match",
-};
-
-// export const TWEET = {
-//   dependencies: [TweetNode],
-//   export: (node) => {
-//     if (!$isTweetNode(node)) {
-//       return null;
-//     }
-
-//     return `<tweet id="${node.getId()}" />`;
-//   },
-//   regExp: /<tweet id="([^"]+?)"\s?\/>\s?$/,
-//   replace: (textNode, _1, match) => {
-//     const [, id] = match;
-//     const tweetNode = $createTweetNode(id);
-//     textNode.replace(tweetNode);
-//   },
-//   type: "element",
-// };
 
 // Very primitive table setup
 const TABLE_ROW_REG_EXP = /^(?:\|)(.+)(?:\|)\s?$/;
@@ -203,6 +76,7 @@ export const TABLE = {
   },
   regExp: TABLE_ROW_REG_EXP,
   replace: (parentNode, _1, match) => {
+    console.log("AASASASS");
     // Header row
     if (TABLE_ROW_DIVIDER_REG_EXP.test(match[0])) {
       const table = parentNode.getPreviousSibling();
@@ -316,17 +190,3 @@ const mapToTableCells = (textContent) => {
   }
   return match[1].split("|").map((text) => $createTableCell(text));
 };
-
-export const PLAYGROUND_TRANSFORMERS = [
-  TABLE,
-  HR,
-  IMAGE,
-  EMOJI,
-  EQUATION,
-  // TWEET,
-  CHECK_LIST,
-  ...ELEMENT_TRANSFORMERS,
-  ...MULTILINE_ELEMENT_TRANSFORMERS,
-  ...TEXT_FORMAT_TRANSFORMERS,
-  ...TEXT_MATCH_TRANSFORMERS,
-];
