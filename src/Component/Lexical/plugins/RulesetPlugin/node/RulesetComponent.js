@@ -14,7 +14,7 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 import { useLayoutEffect, useRef, useState } from "react";
 import { grey } from "@mui/material/colors";
-import { useSlot } from "src/Component/Lexical/context/SlotContext";
+import { useSlot } from "../../../context/SlotContext";
 
 const RULESET_TITLE_REGEX = /^(\[[^[]+\])(?:\s*)?(.*)/;
 const StyledRulesetBlock = styled(Badge)(({ theme }) => ({
