@@ -37,7 +37,7 @@ const HR = {
   type: "element",
 };
 
-const DEFAULT_TRANSFORMERS = [
+export const DEFAULT_TRANSFORMERS = [
   HR,
   ...ELEMENT_TRANSFORMERS,
   // ...MULTILINE_ELEMENT_TRANSFORMERS,
@@ -49,9 +49,7 @@ export const MarkdownShortcutPlugin = ({ plugins = [] }) => {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    MUT_TRANSFORMERS.current = [...DEFAULT_TRANSFORMERS, ...plugins];
-
-    return registerMarkdownShortcuts(editor, MUT_TRANSFORMERS.current);
+    return registerMarkdownShortcuts(editor, plugins);
   }, [editor, plugins]);
 
   return null;

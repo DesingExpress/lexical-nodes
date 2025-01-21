@@ -46,6 +46,7 @@ import TestRawEditor from "./TestRawEditor";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FRONTMATTER } from "./plugins/FrontmatterPlugin/transformer";
 import {
+  DEFAULT_TRANSFORMERS,
   MarkdownShortcutPlugin,
   MUT_TRANSFORMERS,
 } from "./plugins/MarkdownShortcut";
@@ -53,7 +54,10 @@ import combineContexts from "./utils/combineContext";
 import { useLitegraphSlot } from "./context/litegraphContext";
 import { $getFrontmatter } from "./utils/getMetaData";
 import { $getQueris } from "./utils/getQueris";
-import { $convertToMarkdownString } from "#/@lexical/markdown/index.js";
+import {
+  $convertFromMarkdownString,
+  $convertToMarkdownString,
+} from "#/@lexical/markdown/index.js";
 const placeholder = "Enter some rich text...";
 
 const removeStylesExportDOM = (editor, target) => {
@@ -219,9 +223,7 @@ function Editor({ plugins, shortcuts }) {
               <TabIndentationPlugin maxIndent={0} />
               <TabFocusPlugin />
               <ListPlugin />
-              <MarkdownShortcutPlugin
-                plugins={[...shortcuts, EQUATION, CODE, FRONTMATTER]}
-              />
+              <MarkdownShortcutPlugin plugins={shortcuts} />
               <EquationsPlugin />
               <HorizontalRulePlugin />
 
@@ -283,20 +285,45 @@ function Editor({ plugins, shortcuts }) {
   );
 }
 
-export default function Lexical({ plugins: _plugins }) {
+export default function Lexical({
+  plugins: _plugins,
+  isEditMode,
+  value,
+  onSave,
+}) {
   const {
     plugins = [],
     nodes = [],
     shortcuts = [],
     contexts = [],
   } = useMemo(() => _plugins, [_plugins]);
+
+  const _shortcuts = useMemo(() => {
+    return (MUT_TRANSFORMERS.current = [
+      ...DEFAULT_TRANSFORMERS,
+      ...shortcuts,
+      EQUATION,
+      CODE,
+      FRONTMATTER,
+    ]);
+  }, [shortcuts]);
+
   const LexicalProvider = useMemo(
     () => combineContexts(SharedHistoryContext, ToolbarContext, ...contexts),
     [contexts]
   );
   const editorConfig = useMemo(
     () => ({
-      editable: true,
+      editorState:
+        function () {
+          $convertFromMarkdownString(
+            value,
+            MUT_TRANSFORMERS.current,
+            undefined,
+            true
+          );
+        } ?? undefined,
+      editable: isEditMode,
       html: {
         export: exportMap,
         import: constructImportMap(),
@@ -320,9 +347,10 @@ export default function Lexical({ plugins: _plugins }) {
                 overflow: "hidden auto",
                 height: "100%",
                 width: "100%",
+                position: "relative",
               }}
             >
-              <Editor plugins={plugins} shortcuts={shortcuts} />
+              <Editor plugins={plugins} shortcuts={_shortcuts} />
             </div>
           </LexicalProvider>
         </LexicalComposer>
