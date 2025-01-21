@@ -25,7 +25,7 @@ import { parseAllowedColor, parseAllowedFontSize } from "./styleConfig";
 import lexicalTheme from "./theme";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import DraggableBlockPlugin from "./plugins/DraggableBlockPlugin";
 import EquationsPlugin, { EQUATION } from "./plugins/EquationsPlugin";
 import defaultNodes from "./nodes";
@@ -45,9 +45,15 @@ import { SettingsContext, useSettings } from "./context/SettingsContext";
 import TestRawEditor from "./TestRawEditor";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FRONTMATTER } from "./plugins/FrontmatterPlugin/transformer";
-import { MarkdownShortcutPlugin } from "./plugins/MarkdownShortcut";
+import {
+  MarkdownShortcutPlugin,
+  MUT_TRANSFORMERS,
+} from "./plugins/MarkdownShortcut";
 import combineContexts from "./utils/combineContext";
-
+import { useLitegraphSlot } from "./context/litegraphContext";
+import { $getFrontmatter } from "./utils/getMetaData";
+import { $getQueris } from "./utils/getQueris";
+import { $convertToMarkdownString } from "#/@lexical/markdown/index.js";
 const placeholder = "Enter some rich text...";
 
 const removeStylesExportDOM = (editor, target) => {
@@ -150,11 +156,34 @@ function Editor({ plugins, shortcuts }) {
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
+  const registerCommand = useLitegraphSlot();
+
   const onRef = (_floatingAnchorElem) => {
     if (_floatingAnchorElem !== null) {
       setFloatingAnchorElem(_floatingAnchorElem);
     }
   };
+
+  useEffect(() => {
+    const unregister = registerCommand("toSave", (node) => {
+      editor.read(() => {
+        const markdown = $convertToMarkdownString(
+          MUT_TRANSFORMERS.current,
+          undefined, //node
+          true
+        );
+        node.setOutputData(3, {
+          rule_body: markdown,
+          rule_meta: $getFrontmatter(),
+          queryset: $getQueris(),
+        });
+        node.triggerSlot(2);
+      });
+    });
+    return () => {
+      unregister();
+    };
+  }, [registerCommand]);
   return (
     <Fragment>
       <div className="editor-shell">

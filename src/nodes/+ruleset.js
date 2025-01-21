@@ -2,7 +2,7 @@ import { Pure } from "@design-express/fabrica";
 // import { useState } from "react";
 import { RulesetNode } from "../Component/Lexical/plugins/RulesetPlugin/node/RulesetNode";
 import { RULESET } from "../Component/Lexical/plugins/RulesetPlugin/transformer";
-import { SlotContext } from "src/Component/Lexical/context/SlotContext";
+import { SlotContext } from "../Component/Lexical/context/SlotContext";
 
 export class rulesetPluginNode extends Pure {
   static path = "Lexical/Plugin";

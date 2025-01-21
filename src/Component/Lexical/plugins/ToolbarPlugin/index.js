@@ -558,35 +558,6 @@ export default function ToolbarPlugin({
     );
   }, [$updateToolbar, activeEditor, editor, updateToolbarState]);
 
-  const applyStyleText = useCallback(
-    (styles, skipHistoryStack) => {
-      activeEditor.update(
-        () => {
-          const selection = $getSelection();
-          if (selection !== null) {
-            $patchStyleText(selection, styles);
-          }
-        },
-        skipHistoryStack ? { tag: "historic" } : {}
-      );
-    },
-    [activeEditor]
-  );
-
-  const onFontColorSelect = useCallback(
-    (value, skipHistoryStack) => {
-      applyStyleText({ color: value }, skipHistoryStack);
-    },
-    [applyStyleText]
-  );
-
-  const onBgColorSelect = useCallback(
-    (value, skipHistoryStack) => {
-      applyStyleText({ "background-color": value }, skipHistoryStack);
-    },
-    [applyStyleText]
-  );
-
   const insertLink = useCallback(() => {
     if (!toolbarState.isLink) {
       setIsLinkEditMode(true);
@@ -599,23 +570,6 @@ export default function ToolbarPlugin({
       activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
   }, [activeEditor, setIsLinkEditMode, toolbarState.isLink]);
-
-  const onCodeLanguageSelect = useCallback(
-    (value) => {
-      activeEditor.update(() => {
-        if (selectedElementKey !== null) {
-          const node = $getNodeByKey(selectedElementKey);
-          // if ($isCodeNode(node)) {
-          //   node.setLanguage(value);
-          // }
-        }
-      });
-    },
-    [activeEditor, selectedElementKey]
-  );
-  const insertGifOnClick = (payload) => {
-    activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
-  };
 
   const canViewerSeeInsertDropdown = !toolbarState.isImageCaption;
   const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption;
