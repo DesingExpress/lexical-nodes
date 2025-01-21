@@ -58,6 +58,7 @@ import {
 //   TweetNode,
 // } from "../../nodes/TweetNode";
 import emojiList from "../../utils/emoji-list";
+import { MUT_TRANSFORMERS } from "../MarkdownShortcut";
 
 export const HR = {
   dependencies: [HorizontalRuleNode],
@@ -181,7 +182,7 @@ export const TABLE = {
         // It's TableCellNode so it's just to make flow happy
         if ($isTableCellNode(cell)) {
           rowOutput.push(
-            $convertToMarkdownString(PLAYGROUND_TRANSFORMERS, cell).replace(
+            $convertToMarkdownString(MUT_TRANSFORMERS.current, cell).replace(
               /\n/g,
               "\\n"
             )
@@ -304,7 +305,7 @@ function getTableColumnsSize(table) {
 const $createTableCell = (textContent) => {
   textContent = textContent.replace(/\\n/g, "\n");
   const cell = $createTableCellNode(TableCellHeaderStates.NO_STATUS);
-  $convertFromMarkdownString(textContent, PLAYGROUND_TRANSFORMERS, cell);
+  $convertFromMarkdownString(textContent, MUT_TRANSFORMERS.current, cell);
   return cell;
 };
 
