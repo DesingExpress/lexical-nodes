@@ -32,16 +32,24 @@ export class RulesetNode extends DecoratorNode {
   static clone(node) {
     return new RulesetNode(
       node.getTextContent(),
-      { __cm: node.__cm, keymapConf: node.keymapConf, ...node.__meta },
+      {
+        __cm: node.__cm,
+        keymapConf: node.keymapConf,
+        editorState: node.editorState,
+        ...node.__meta,
+      },
       node.__key
     );
   }
 
   constructor(code, meta = {}, key) {
     super(key);
-    const { __cm, languageConf, keymapConf, ..._meta } = meta;
+    const { __cm, languageConf, keymapConf, editorState, ..._meta } = meta;
+
     this.keymapConf = keymapConf ?? new Compartment();
     this.languageConf = languageConf ?? new Compartment();
+    this.editorState = editorState ?? new Compartment();
+
     this.__cm =
       __cm ??
       this.__cm ??
@@ -51,6 +59,7 @@ export class RulesetNode extends DecoratorNode {
           basicSetup,
           this.languageConf.of([]),
           this.keymapConf.of([]),
+          this.editorState.of([]),
           EditorView.lineWrapping,
         ],
       });
@@ -92,7 +101,11 @@ export class RulesetNode extends DecoratorNode {
   decorate() {
     return (
       <Suspense fallback={null}>
-        <RulesetComponent cm={this.__cm} meta={this.__meta} />
+        <RulesetComponent
+          cm={this.__cm}
+          editorState={this.editorState}
+          meta={this.__meta}
+        />
       </Suspense>
     );
   }
