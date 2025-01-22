@@ -339,6 +339,7 @@ export default function Lexical({
       EQUATION,
       CODE,
       FRONTMATTER,
+      TABLE,
     ]);
   }, [shortcuts]);
 
