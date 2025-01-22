@@ -21,7 +21,12 @@ import {
   $isParentElementRTL,
   $patchStyleText,
 } from "@lexical/selection";
-import { $isTableNode, $isTableSelection } from "@lexical/table";
+import {
+  $createTableNodeWithDimensions,
+  $isTableNode,
+  $isTableSelection,
+  INSERT_TABLE_COMMAND,
+} from "@lexical/table";
 import {
   $findMatchingParent,
   $getNearestNodeOfType,
@@ -30,7 +35,10 @@ import {
   mergeRegister,
 } from "@lexical/utils";
 import {
+  $createParagraphNode,
+  $createTextNode,
   $getNodeByKey,
+  $getRoot,
   $getSelection,
   $isElementNode,
   $isRangeSelection,
@@ -66,7 +74,7 @@ import { InsertInlineImageDialog } from "../InlineImagePlugin";
 // import { INSERT_PAGE_BREAK } from "../PageBreakPlugin";
 // import { InsertPollDialog } from "../PollPlugin";
 import { SHORTCUTS } from "../ShortcutsPlugin/shortcuts";
-// import { InsertTableDialog } from "../TablePlugin";
+// import { InsertTableDialog } from "../TablePlugin/TablePlugin";
 import {
   clearFormatting,
   formatBulletList,
@@ -99,6 +107,7 @@ import {
 } from "#/@lexical/markdown/index.js";
 import { $getFrontmatter } from "../../utils/getMetaData";
 import { MUT_TRANSFORMERS } from "../MarkdownShortcut";
+import { $createCodeNode, $isCodeNode } from "../CodePlugin/node/CodeBlockNode";
 
 function dropDownActiveClass(active) {
   if (active) {
@@ -369,11 +378,22 @@ function Divider() {
   return <div className="divider" />;
 }
 
+export function FillColumns() {
+  const columns = prompt("Enter the number of columns:", "");
+
+  if (columns !== null) {
+    return columns;
+  } else {
+    return String(0);
+  }
+}
+
 export default function ToolbarPlugin({
   editor,
   activeEditor,
   setActiveEditor,
   setIsLinkEditMode,
+  shouldPreserveNewLinesInMarkdown,
 }) {
   const [selectedElementKey, setSelectedElementKey] = useState(null);
   const [modal, showModal] = useModal();
@@ -576,22 +596,49 @@ export default function ToolbarPlugin({
 
   function lx2md() {
     setRaw(true);
-    editor.read(() => {
+    editor.update(() => {
       const markdown = $convertToMarkdownString(
         MUT_TRANSFORMERS.current,
         undefined, //node
-        true
+        shouldPreserveNewLinesInMarkdown
       );
       toolbarState.setCMText(markdown);
     });
   }
+
   function md2lx() {
     setRaw(false);
     const md = toolbarState.getCMText();
+
     editor.update(() => {
-      $convertFromMarkdownString(md, MUT_TRANSFORMERS.current, undefined, true);
+      $convertFromMarkdownString(
+        md,
+        MUT_TRANSFORMERS.current,
+        undefined, //node
+        shouldPreserveNewLinesInMarkdown
+      );
     });
   }
+
+  // function handleCreateTable() {
+  //   const rows = prompt("Enter the number of rows:", "");
+  //   const columns = prompt("Enter the number of columns:", "");
+
+  //   if (
+  //     isNaN(Number(columns)) ||
+  //     columns === null ||
+  //     rows === null ||
+  //     columns === "" ||
+  //     rows === "" ||
+  //     isNaN(Number(rows))
+  //   ) {
+  //     return;
+  //   }
+  //   editor.dispatchCommand(INSERT_TABLE_COMMAND, {
+  //     columns: columns,
+  //     rows: rows,
+  //   });
+  // }
 
   return (
     <div className="toolbar">
@@ -864,7 +911,7 @@ export default function ToolbarPlugin({
       <button
         disabled={!isEditable}
         onClick={isRaw ? md2lx : lx2md}
-        className={"toolbar-item spaced "}
+        className="toolbar-item spaced "
         aria-label="toggle edit on"
         title={`raw false`}
         type="button"
@@ -884,6 +931,9 @@ export default function ToolbarPlugin({
         type="button"
       >
         <EditIcon fontSize="inherit" className="format" />
+      </button>
+      <button onClick={handleCreateTable} className="toolbar-item spaced">
+        <span className="text">Insert Table</span>
       </button> */}
       {modal}
     </div>

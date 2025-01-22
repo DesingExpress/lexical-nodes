@@ -1796,7 +1796,7 @@ button.item.dropdown-item-active i {
   position: relative;
   outline: 0;
   padding: 8px 28px 40px;
-  min-height: 150px;
+  min-height: 400px;
 }
 @media (max-width: 1025px) {
   .ContentEditable__root {
@@ -1824,4 +1824,19 @@ button.item.dropdown-item-active i {
     left: 8px;
     right: 8px;
   }
+}
+
+.ContentEditable__root > table {
+  border-spacing: 0;
+  max-width: 100%;
+  overflow-y: scroll;
+  table-layout: fixed;
+  width: 100%;
+}
+
+table,
+td,
+th {
+  border: 1px solid #000;
+  border-collapse: collapse;
 }
