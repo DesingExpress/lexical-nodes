@@ -130,7 +130,7 @@ function TableActionMenu({
   showColorPickerModal,
 }) {
   const [editor] = useLexicalComposerContext();
-  const dropDownRef = (useRef < HTMLDivElement) | (null > null);
+  const dropDownRef = useRef(null);
   const [tableCellNode, updateTableCellNode] = useState(_tableCellNode);
   const [selectionCounts, updateSelectionCounts] = useState({
     columns: 1,
