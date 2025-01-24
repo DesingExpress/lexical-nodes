@@ -263,7 +263,6 @@ function TableHoverActionsContainer({ anchorElem }) {
 
 function getMouseInfo(event) {
   const target = event.target;
-
   if (isHTMLElement(target)) {
     const tableDOMNode = target.closest(
       "td.PlaygroundEditorTheme__tableCell, th.PlaygroundEditorTheme__tableCell"

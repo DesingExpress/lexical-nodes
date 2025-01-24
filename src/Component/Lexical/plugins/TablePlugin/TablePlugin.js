@@ -8,35 +8,19 @@
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
-  $createTableNodeWithDimensions,
   INSERT_TABLE_COMMAND,
   TableCellNode,
   TableNode,
   TableRowNode,
 } from "@lexical/table";
 import { Button, DialogActions, TextField } from "@mui/material";
-import {
-  $createNodeSelection,
-  $createParagraphNode,
-  $getSelection,
-  $isRangeSelection,
-  $isRootOrShadowRoot,
-  $setSelection,
-  COMMAND_PRIORITY_EDITOR,
-} from "lexical";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import invariant from "../../shared/invariant";
-
-// import Button from "../ui/Button";
-// import { DialogActions } from "../ui/Dialog";
-// import TextInput from "../ui/TextInput";
 
 export const CellContext = createContext({
   cellEditorConfig: null,
   cellEditorPlugins: null,
-  set: () => {
-    // Empty
-  },
+  set: () => {},
 });
 
 export function TableContext({ children }) {
@@ -116,6 +100,7 @@ export function InsertTableDialog({ activeEditor, onClose }) {
 export function TablePlugin({ cellEditorConfig, children }) {
   const [editor] = useLexicalComposerContext();
   const cellContext = useContext(CellContext);
+  console.log("cellEditorConfig: ", cellEditorConfig);
 
   useEffect(() => {
     if (!editor.hasNodes([TableNode, TableRowNode, TableCellNode])) {
@@ -128,62 +113,6 @@ export function TablePlugin({ cellEditorConfig, children }) {
 
   useEffect(() => {
     cellContext.set(cellEditorConfig, children);
-  }, [cellContext, cellEditorConfig, children]);
+  }, [cellContext, cellEditorConfig, children, editor]);
   return null;
 }
-
-// export function TablePlugin({ cellEditorConfig, children }) {
-//   const [editor] = useLexicalComposerContext();
-//   const cellContext = useContext(CellContext);
-
-//   useEffect(() => {
-//     if (!editor.hasNodes([TableNode, TableRowNode, TableCellNode])) {
-//       invariant(
-//         false,
-//         "TablePlugin: TableNode, TableRowNode, or TableCellNode is not registered on editor"
-//       );
-//     }
-//     cellContext.set(cellEditorConfig, children);
-
-//     return editor.registerCommand(
-//       INSERT_TABLE_COMMAND,
-//       ({ columns, rows, includeHeaders }) => {
-//         const selection = $getSelection();
-
-//         if (!$isRangeSelection(selection)) {
-//           return true;
-//         }
-//         const focus = selection.focus;
-//         const focusNode = focus.getNode();
-//         if (focusNode !== null) {
-//           const tableNode = $createTableNodeWithDimensions(
-//             Number(rows),
-//             Number(columns),
-//             includeHeaders
-//           );
-//           if ($isRootOrShadowRoot(focusNode)) {
-//             const target = focusNode.getChildAtIndex(focus.offset);
-
-//             if (target !== null) {
-//               target.insertBefore(tableNode);
-//             } else {
-//               focusNode.append(tableNode);
-//             }
-//             tableNode.insertBefore($createParagraphNode());
-//           } else {
-//             const topLevelNode = focusNode.getTopLevelElementOrThrow();
-//             topLevelNode.insertAfter(tableNode);
-//           }
-//           tableNode.insertAfter($createParagraphNode());
-//           const nodeSelection = $createNodeSelection();
-//           nodeSelection.add(tableNode.getKey());
-//           $setSelection(nodeSelection);
-//         }
-//         return true;
-//       },
-//       COMMAND_PRIORITY_EDITOR
-//     );
-//   }, [cellContext, cellEditorConfig, children, editor]);
-
-//   return null;
-// }

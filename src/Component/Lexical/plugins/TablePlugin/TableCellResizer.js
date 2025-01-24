@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-
-// import "./index.css";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
+import useLexicalEditable from "@lexical/react/useLexicalEditable";
 import {
   $computeTableMapSkipCellCheck,
   $getTableNodeFromLexicalNodeOrThrow,
@@ -22,15 +20,7 @@ import {
 import { calculateZoomLevel } from "@lexical/utils";
 import { $getNearestNodeFromDOMNode, isHTMLElement } from "lexical";
 import * as React from "react";
-import {
-  MouseEventHandler,
-  ReactPortal,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const MIN_ROW_HEIGHT = 33;
@@ -395,11 +385,13 @@ function TableCellResizer({ editor }) {
             className="TableCellResizer__resizer TableCellResizer__ui"
             style={resizerStyles.right || undefined}
             onMouseDown={toggleResize("right")}
+            onMouseUp={toggleResize("right")}
           />
           <div
             className="TableCellResizer__resizer TableCellResizer__ui"
             style={resizerStyles.bottom || undefined}
             onMouseDown={toggleResize("bottom")}
+            onMouseUp={toggleResize("bottom")}
           />
         </>
       )}
