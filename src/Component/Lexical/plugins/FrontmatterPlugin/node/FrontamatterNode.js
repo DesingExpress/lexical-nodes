@@ -28,17 +28,25 @@ export class FrontmatterNode extends DecoratorNode {
   static clone(node) {
     return new FrontmatterNode(
       node.__yaml,
-      node.__cm,
-      node.keymapConf,
+      {
+        __cm: node.__cm,
+        keymapConf: node.keymapConf,
+        editorState: node.editorState,
+      },
       node.__key
     );
   }
 
-  constructor(code, codemirror, keymapConf, key) {
+  constructor(code, meta = {}, key) {
     super(key);
+
+    const { __cm, keymapConf, editorState } = meta;
+
     this.keymapConf = keymapConf ?? new Compartment();
+    this.editorState = editorState ?? new Compartment();
+
     this.__cm =
-      codemirror ??
+      __cm ??
       this.__cm ??
       new EditorView({
         doc: code,
@@ -46,6 +54,7 @@ export class FrontmatterNode extends DecoratorNode {
           basicSetup,
           yaml(),
           this.keymapConf.of([]),
+          this.editorState.of([]),
           EditorView.lineWrapping,
         ],
       });
@@ -83,7 +92,9 @@ export class FrontmatterNode extends DecoratorNode {
   }
 
   decorate() {
-    return <FrontmatterComponent domEl={this.__cm.dom} />;
+    return (
+      <FrontmatterComponent cm={this.__cm} editorState={this.editorState} />
+    );
   }
 
   codeMirrorKeymap = (editor) => {

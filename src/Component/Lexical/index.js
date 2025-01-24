@@ -59,6 +59,7 @@ import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import ComponentPickerMenuPlugin from "./plugins/ComponentPickerPlugin";
 import TableCellResizer from "./plugins/TablePlugin/TableCellResizer";
 import {
+  DEFAULT_TRANSFORMERS,
   MarkdownShortcutPlugin,
   MUT_TRANSFORMERS,
 } from "./plugins/MarkdownShortcut";
@@ -66,7 +67,10 @@ import combineContexts from "./utils/combineContext";
 import { useLitegraphSlot } from "./context/litegraphContext";
 import { $getFrontmatter } from "./utils/getMetaData";
 import { $getQueris } from "./utils/getQueris";
-import { $convertToMarkdownString } from "#/@lexical/markdown/index.js";
+import {
+  $convertFromMarkdownString,
+  $convertToMarkdownString,
+} from "#/@lexical/markdown/index.js";
 import { TABLE } from "./plugins/TablePlugin/transformer";
 import useLexicalEditable from "@lexical/react/useLexicalEditable";
 import { CAN_USE_DOM } from "@lexical/utils";
@@ -263,9 +267,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
               <TabFocusPlugin />
               {/* <ComponentPickerMenuPlugin /> */}
               <ListPlugin />
-              <MarkdownShortcutPlugin
-                plugins={[...shortcuts, EQUATION, CODE, FRONTMATTER, TABLE]}
-              />
+              <MarkdownShortcutPlugin plugins={shortcuts} />
               <EquationsPlugin />
               <HorizontalRulePlugin />
               <TablePlugin
@@ -340,20 +342,46 @@ function Editor({ plugins, shortcuts, editorRef }) {
   );
 }
 
-export default function Lexical({ plugins: _plugins }) {
+export default function Lexical({
+  plugins: _plugins,
+  isEditMode,
+  value,
+  onSave,
+}) {
   const {
     plugins = [],
     nodes = [],
     shortcuts = [],
     contexts = [],
   } = useMemo(() => _plugins, [_plugins]);
+
+  const _shortcuts = useMemo(() => {
+    return (MUT_TRANSFORMERS.current = [
+      ...DEFAULT_TRANSFORMERS,
+      ...shortcuts,
+      EQUATION,
+      CODE,
+      FRONTMATTER,
+      TABLE,
+    ]);
+  }, [shortcuts]);
+
   const LexicalProvider = useMemo(
     () => combineContexts(SharedHistoryContext, ToolbarContext, ...contexts),
     [contexts]
   );
   const editorConfig = useMemo(
     () => ({
-      editable: true,
+      editorState:
+        function () {
+          $convertFromMarkdownString(
+            value,
+            MUT_TRANSFORMERS.current,
+            undefined,
+            true
+          );
+        } ?? undefined,
+      editable: isEditMode,
       html: {
         export: exportMap,
         import: constructImportMap(),

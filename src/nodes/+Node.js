@@ -26,13 +26,14 @@ export class lexicalNode extends Pure {
 
   onExecute() {
     const plugins = this.getInputData(1) ?? {};
-
-    this.setOutputData(
-      1,
-      <LitegraphSlotContext node={this}>
-        <Editor plugins={plugins} />
-      </LitegraphSlotContext>
-    );
+    const Comp = ({ isEditMode = true, value = "", onSave }) => {
+      return (
+        <LitegraphSlotContext node={this}>
+          <Editor plugins={plugins} isEditMode={isEditMode} value={value} onSave={onSave} />
+        </LitegraphSlotContext>
+      );
+    };
+    this.setOutputData(1, Comp);
   }
 
   onAction(name) {

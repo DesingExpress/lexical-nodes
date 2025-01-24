@@ -13,8 +13,10 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
-import { Fragment, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { grey } from "@mui/material/colors";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
+import { EditorState as codemirrorState } from "@codemirror/state";
 
 const StyledCodeBlock = styled(Paper)(({ theme }) => ({
   overflow: "hidden",
@@ -60,11 +62,13 @@ export default function CodeBlockComponent({
   onUpdateLanguage,
   meta,
   test,
+  editorState,
   ...props
 }) {
   const ref = useRef();
   const [isEidtMode, setEditMode] = useState(false);
   const [title, setTitle] = useState(meta.title);
+  const isEditable = useLexicalEditable();
 
   // const isEditable = useLexicalEditable();
 
@@ -85,6 +89,13 @@ export default function CodeBlockComponent({
   useLayoutEffect(() => {
     ref.current.appendChild(cm.dom);
   }, []);
+  useEffect(() => {
+    cm.dispatch({
+      effects: editorState.reconfigure(
+        codemirrorState.readOnly.of(!isEditable)
+      ),
+    });
+  }, [isEditable]);
 
   return (
     <StyledCodeBlock elevation={0}>
@@ -107,24 +118,28 @@ export default function CodeBlockComponent({
         ) : (
           <Fragment>
             <Typography variant="caption">{title ?? "Untitled"}</Typography>
-            <IconButton size="small" onClick={handleClickEditMode}>
-              <EditIcon fontSize="inherit" />
-            </IconButton>
+            {isEditable && (
+              <IconButton size="small" onClick={handleClickEditMode}>
+                <EditIcon fontSize="inherit" />
+              </IconButton>
+            )}
           </Fragment>
         )}
       </Paper>
-      <div className="code-language-wrapper">
-        <Autocomplete
-          size="small"
-          disablePortal
-          options={languageList}
-          defaultValue={language}
-          onChange={handleChange}
-          sx={{ maxWidth: "100%", width: 200 }}
-          renderInput={(params) => <TextField {...params} />}
-          clearIcon={false}
-        />
-      </div>
+      {isEditable && (
+        <div className="code-language-wrapper">
+          <Autocomplete
+            size="small"
+            disablePortal
+            options={languageList}
+            defaultValue={language}
+            onChange={handleChange}
+            sx={{ maxWidth: "100%", width: 200 }}
+            renderInput={(params) => <TextField {...params} />}
+            clearIcon={false}
+          />
+        </div>
+      )}
       <div ref={ref} />
     </StyledCodeBlock>
   );

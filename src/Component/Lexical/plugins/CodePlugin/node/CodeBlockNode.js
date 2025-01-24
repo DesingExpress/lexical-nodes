@@ -58,6 +58,7 @@ export class CodeNode extends DecoratorNode {
         __cm: node.__cm,
         languageConf: node.languageConf,
         keymapConf: node.keymapConf,
+        editorState: node.editorState,
         ...node.__meta,
       },
       node.__key
@@ -66,9 +67,12 @@ export class CodeNode extends DecoratorNode {
 
   constructor(language, code, meta = {}, key) {
     super(key);
-    const { __cm, languageConf, keymapConf, ..._meta } = meta;
+    const { __cm, languageConf, keymapConf, editorState, ..._meta } = meta;
+
     this.languageConf = languageConf ?? new Compartment();
     this.keymapConf = keymapConf ?? new Compartment();
+    this.editorState = editorState ?? new Compartment();
+
     this.__cm =
       __cm ??
       this.__cm ??
@@ -78,6 +82,7 @@ export class CodeNode extends DecoratorNode {
           basicSetup,
           this.languageConf.of([]),
           this.keymapConf.of([]),
+          this.editorState.of([]),
           EditorView.lineWrapping,
         ],
       });
@@ -125,6 +130,7 @@ export class CodeNode extends DecoratorNode {
           language={this.getLanguage()}
           languageList={languageList}
           keymap={this.keymapConf}
+          editorState={this.editorState}
           onUpdateLanguage={(v) => this.setLanguage(v)}
           meta={this.__meta}
           test={this}

@@ -12,9 +12,11 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { grey } from "@mui/material/colors";
 import { useSlot } from "../../../context/SlotContext";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
+import { EditorState as codemirrorState } from "@codemirror/state";
 
 const RULESET_TITLE_REGEX = /^(\[[^[]+\])(?:\s*)?(.*)/;
 const StyledRulesetBlock = styled(Badge)(({ theme }) => ({
@@ -46,6 +48,7 @@ export default function RulesetBlockComponent({
   cm,
   language,
   languageList,
+  editorState,
   meta,
   ...props
 }) {
@@ -55,6 +58,7 @@ export default function RulesetBlockComponent({
   const [code, setCode] = useState(meta.code);
   const [isNew, setNew] = useState(false);
   const handleSlot = useSlot();
+  const isEditable = useLexicalEditable();
 
   function handleClickEditMode() {
     setEditMode(true);
@@ -93,6 +97,14 @@ export default function RulesetBlockComponent({
   useLayoutEffect(() => {
     ref.current.appendChild(cm.dom);
   }, []);
+
+  useEffect(() => {
+    cm.dispatch({
+      effects: editorState.reconfigure(
+        codemirrorState.readOnly.of(!isEditable)
+      ),
+    });
+  }, [isEditable]);
 
   return (
     <StyledRulesetBlock badgeContent="new" color="primary" invisible={!isNew}>
@@ -147,9 +159,11 @@ export default function RulesetBlockComponent({
                 secondaryTypographyProps={{ variant: "caption" }}
               />
               <div>
-                <IconButton size="small" onClick={handleClickEditMode}>
-                  <EditIcon fontSize="inherit" />
-                </IconButton>
+                {isEditable && (
+                  <IconButton size="small" onClick={handleClickEditMode}>
+                    <EditIcon fontSize="inherit" />
+                  </IconButton>
+                )}
                 <IconButton size="small" onClick={handleClickExecution}>
                   <PlayArrowOutlinedIcon fontSize="inherit" />
                 </IconButton>

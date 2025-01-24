@@ -49,7 +49,7 @@
   margin: 0;
   border-radius: 2px;
   height: 100%;
-  max-width: 1100px;
+  /* max-width: 1100px; */
   color: #000;
   position: relative;
   line-height: 1.7;
@@ -1834,9 +1834,9 @@ button.item.dropdown-item-active i {
   width: 100%;
 }
 
-table,
-td,
-th {
+.ContentEditable__root table,
+.ContentEditable__root td,
+.ContentEditable__root th {
   border: 1px solid #000;
   border-collapse: collapse;
 }
