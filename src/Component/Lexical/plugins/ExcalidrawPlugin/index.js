@@ -14,14 +14,10 @@ import {
   $isRootOrShadowRoot,
   COMMAND_PRIORITY_EDITOR,
   createCommand,
-  LexicalCommand,
 } from "lexical";
 import { useEffect, useState } from "react";
 
-import {
-  $createExcalidrawNode,
-  ExcalidrawNode,
-} from "../../nodes/ExcalidrawNode";
+import { $createExcalidrawNode, ExcalidrawNode } from "./node/index";
 import ExcalidrawModal from "./ui/ExcalidrawModal";
 
 export const INSERT_EXCALIDRAW_COMMAND = createCommand(

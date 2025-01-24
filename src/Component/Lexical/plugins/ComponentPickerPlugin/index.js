@@ -36,13 +36,13 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import useModal from "../../hooks/useModal";
-import catTypingGif from "../../images/cat-typing.gif";
-import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
-import InsertLayoutDialog from "../LayoutPlugin/ui/InsertLayoutDialog";
+// import catTypingGif from '../../images/cat-typing.gif';
 import { EmbedConfigs } from "../AutoEmbedPlugin";
+import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
 import { InsertEquationDialog } from "../EquationsPlugin";
 import { INSERT_EXCALIDRAW_COMMAND } from "../ExcalidrawPlugin";
 import { INSERT_IMAGE_COMMAND, InsertImageDialog } from "../ImagesPlugin";
+import InsertLayoutDialog from "../LayoutPlugin/ui/InsertLayoutDialog";
 import { INSERT_PAGE_BREAK } from "../PageBreakPlugin";
 import { InsertPollDialog } from "../PollPlugin";
 import { InsertTableDialog } from "../TablePlugin/TablePlugin";
@@ -59,13 +59,22 @@ class ComponentPickerOption extends MenuOption {
   // What happens when you select this option?
   onSelect;
 
-  constructor(title, icon, keywords, keyboardShortcut, onSelect) {
-    super(title, keywords, icon, keyboardShortcut, onSelect);
+  constructor(
+    title,
+    options
+    // options: {
+    //   icon,
+    //   keywords,
+    //   keyboardShortcut,
+    //   onSelect,
+    // },
+  ) {
+    super(title);
     this.title = title;
-    this.keywords = keywords || [];
-    this.icon = icon;
-    this.keyboardShortcut = keyboardShortcut;
-    this.onSelect = onSelect.bind(this);
+    this.keywords = options.keywords || [];
+    this.icon = options.icon;
+    this.keyboardShortcut = options.keyboardShortcut;
+    this.onSelect = options.onSelect.bind(this);
   }
 }
 
@@ -261,7 +270,7 @@ function getBaseOptions(editor, showModal) {
       onSelect: () =>
         editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
           altText: "Cat typing on a laptop",
-          src: catTypingGif,
+          src: "catTypingGif",
         }),
     }),
     new ComponentPickerOption("Image", {
@@ -301,7 +310,7 @@ function getBaseOptions(editor, showModal) {
 export default function ComponentPickerMenuPlugin() {
   const [editor] = useLexicalComposerContext();
   const [modal, showModal] = useModal();
-  const [queryString, setQueryString] = useState() | null;
+  const [queryString, setQueryString] = useState(null);
 
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,

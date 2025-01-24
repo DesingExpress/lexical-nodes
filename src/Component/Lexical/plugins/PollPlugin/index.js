@@ -20,11 +20,7 @@ import {
 import { useEffect, useState } from "react";
 import * as React from "react";
 
-import {
-  $createPollNode,
-  createPollOption,
-  PollNode,
-} from "../../nodes/PollNode";
+import { $createPollNode, createPollOption, PollNode } from "./node/PollNode";
 import { Button, DialogActions, TextField } from "@mui/material";
 // import Button from "../../ui/Button";
 // import { DialogActions } from "../../ui/Dialog";

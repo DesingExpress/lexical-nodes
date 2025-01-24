@@ -45,7 +45,7 @@ import { SettingsContext, useSettings } from "./context/SettingsContext";
 import TestRawEditor from "./TestRawEditor";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FRONTMATTER } from "./plugins/FrontmatterPlugin/transformer";
-import { TablePlugin } from "./plugins/TablePlugin/TablePlugin";
+import { TableContext, TablePlugin } from "./plugins/TablePlugin/TablePlugin";
 import TableCellActionMenuPlugin from "./plugins/TablePlugin/TableActionMenuPlugin";
 import TableHoverActionsPlugin from "./plugins/TablePlugin/TableHoverActionsPlugin";
 import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
@@ -56,7 +56,8 @@ import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
 // import ExcalidrawPlugin from "./plugins/ExcalidrawPlugin";
 // import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
-import TableCellResizerPlugin from "./plugins/TablePlugin/TableCellResizer";
+import ComponentPickerMenuPlugin from "./plugins/ComponentPickerPlugin";
+import TableCellResizer from "./plugins/TablePlugin/TableCellResizer";
 import {
   MarkdownShortcutPlugin,
   MUT_TRANSFORMERS,
@@ -67,6 +68,9 @@ import { $getFrontmatter } from "./utils/getMetaData";
 import { $getQueris } from "./utils/getQueris";
 import { $convertToMarkdownString } from "#/@lexical/markdown/index.js";
 import { TABLE } from "./plugins/TablePlugin/transformer";
+import useLexicalEditable from "@lexical/react/useLexicalEditable";
+import { CAN_USE_DOM } from "@lexical/utils";
+
 const placeholder = "Enter some rich text...";
 
 const removeStylesExportDOM = (editor, target) => {
@@ -171,8 +175,9 @@ function Editor({ plugins, shortcuts, editorRef }) {
     },
   } = useSettings();
   const { historyState } = useSharedHistoryContext();
-
+  const isEditable = useLexicalEditable();
   const [floatingAnchorElem, setFloatingAnchorElem] = useState(null);
+  const [isSmallWidthViewport, setIsSmallWidthViewport] = useState(false);
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
@@ -183,6 +188,23 @@ function Editor({ plugins, shortcuts, editorRef }) {
       setFloatingAnchorElem(_floatingAnchorElem);
     }
   };
+
+  useEffect(() => {
+    const updateViewPortWidth = () => {
+      const isNextSmallWidthViewport =
+        CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
+
+      if (isNextSmallWidthViewport !== isSmallWidthViewport) {
+        setIsSmallWidthViewport(isNextSmallWidthViewport);
+      }
+    };
+    updateViewPortWidth();
+    window.addEventListener("resize", updateViewPortWidth);
+
+    return () => {
+      window.removeEventListener("resize", updateViewPortWidth);
+    };
+  }, [isSmallWidthViewport]);
 
   useEffect(() => {
     const unregister = registerCommand("toSave", (node) => {
@@ -239,6 +261,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
               />
               <TabIndentationPlugin maxIndent={0} />
               <TabFocusPlugin />
+              {/* <ComponentPickerMenuPlugin /> */}
               <ListPlugin />
               <MarkdownShortcutPlugin
                 plugins={[...shortcuts, EQUATION, CODE, FRONTMATTER, TABLE]}
@@ -250,7 +273,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
                 hasCellBackgroundColor={tableCellBackgroundColor}
                 hasHorizontalScroll={tableHorizontalScroll}
               />
-              <TableCellResizerPlugin />
+              <TableCellResizer />
               {/* <AutoEmbedPlugin />
               <CollapsiblePlugin />
               <ExcalidrawPlugin />
@@ -262,10 +285,10 @@ function Editor({ plugins, shortcuts, editorRef }) {
                   <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
                   {/* <CodeActionMenuPlugin anchorElem={floatingAnchorElem} /> */}
                   {/* <FloatingLinkEditorPlugin
-                  anchorElem={floatingAnchorElem}
-                  isLinkEditMode={isLinkEditMode}
-                  setIsLinkEditMode={setIsLinkEditMode}
-                /> */}
+                      anchorElem={floatingAnchorElem}
+                      isLinkEditMode={isLinkEditMode}
+                      setIsLinkEditMode={setIsLinkEditMode}
+                    /> */}
                   <TableCellActionMenuPlugin
                     anchorElem={floatingAnchorElem}
                     cellMerge={true}
@@ -278,7 +301,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
                 </>
               )}
               <InlineImagePlugin />
-              <ImagesPlugin />
+              {/* <ImagesPlugin /> */}
               <EditorRefPlugin editorRef={editorRef} />
               {plugins.map((T) => (
                 <T
@@ -349,15 +372,19 @@ export default function Lexical({ plugins: _plugins }) {
       <SettingsContext>
         <LexicalComposer initialConfig={editorConfig}>
           <LexicalProvider>
-            <div
-              style={{
-                overflow: "hidden auto",
-                height: "100%",
-                width: "100%",
-              }}
-            >
-              <Editor plugins={plugins} shortcuts={shortcuts} />
-            </div>
+            <TableContext>
+              <ToolbarContext>
+                <div
+                  style={{
+                    overflow: "hidden auto",
+                    height: "100%",
+                    width: "100%",
+                  }}
+                >
+                  <Editor plugins={plugins} shortcuts={shortcuts} />
+                </div>
+              </ToolbarContext>
+            </TableContext>
           </LexicalProvider>
         </LexicalComposer>
       </SettingsContext>

@@ -31,12 +31,12 @@ import {
   $createLayoutContainerNode,
   $isLayoutContainerNode,
   LayoutContainerNode,
-} from "../../nodes/LayoutContainerNode";
+} from "./node/LayoutContainerNode";
 import {
   $createLayoutItemNode,
   $isLayoutItemNode,
   LayoutItemNode,
-} from "../../nodes/LayoutItemNode";
+} from "./node/LayoutItemNode";
 
 export const INSERT_LAYOUT_COMMAND = createCommand();
 
