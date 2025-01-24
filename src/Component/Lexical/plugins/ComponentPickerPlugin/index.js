@@ -6,7 +6,7 @@
  *
  */
 
-import { $createCodeNode } from "@lexical/code";
+// import { $createCodeNode } from "@lexical/code";
 import {
   INSERT_CHECK_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
@@ -40,7 +40,7 @@ import useModal from "../../hooks/useModal";
 import { EmbedConfigs } from "../AutoEmbedPlugin";
 import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
 import { InsertEquationDialog } from "../EquationsPlugin";
-import { INSERT_EXCALIDRAW_COMMAND } from "../ExcalidrawPlugin";
+// import { INSERT_EXCALIDRAW_COMMAND } from "../ExcalidrawPlugin";
 import { INSERT_IMAGE_COMMAND, InsertImageDialog } from "../ImagesPlugin";
 import InsertLayoutDialog from "../LayoutPlugin/ui/InsertLayoutDialog";
 import { INSERT_PAGE_BREAK } from "../PageBreakPlugin";
@@ -202,26 +202,26 @@ function getBaseOptions(editor, showModal) {
           }
         }),
     }),
-    new ComponentPickerOption("Code", {
-      icon: <i className="icon code" />,
-      keywords: ["javascript", "python", "js", "codeblock"],
-      onSelect: () =>
-        editor.update(() => {
-          const selection = $getSelection();
+    // new ComponentPickerOption("Code", {
+    //   icon: <i className="icon code" />,
+    //   keywords: ["javascript", "python", "js", "codeblock"],
+    //   onSelect: () =>
+    //     editor.update(() => {
+    //       const selection = $getSelection();
 
-          if ($isRangeSelection(selection)) {
-            if (selection.isCollapsed()) {
-              $setBlocksType(selection, () => $createCodeNode());
-            } else {
-              // Will this ever happen?
-              const textContent = selection.getTextContent();
-              const codeNode = $createCodeNode();
-              selection.insertNodes([codeNode]);
-              selection.insertRawText(textContent);
-            }
-          }
-        }),
-    }),
+    //       if ($isRangeSelection(selection)) {
+    //         if (selection.isCollapsed()) {
+    //           $setBlocksType(selection, () => $createCodeNode());
+    //         } else {
+    //           // Will this ever happen?
+    //           const textContent = selection.getTextContent();
+    //           const codeNode = $createCodeNode();
+    //           selection.insertNodes([codeNode]);
+    //           selection.insertRawText(textContent);
+    //         }
+    //       }
+    //     }),
+    // }),
     new ComponentPickerOption("Divider", {
       icon: <i className="icon horizontal-rule" />,
       keywords: ["horizontal rule", "divider", "hr"],
@@ -233,12 +233,12 @@ function getBaseOptions(editor, showModal) {
       keywords: ["page break", "divider"],
       onSelect: () => editor.dispatchCommand(INSERT_PAGE_BREAK, undefined),
     }),
-    new ComponentPickerOption("Excalidraw", {
-      icon: <i className="icon diagram-2" />,
-      keywords: ["excalidraw", "diagram", "drawing"],
-      onSelect: () =>
-        editor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined),
-    }),
+    // new ComponentPickerOption("Excalidraw", {
+    //   icon: <i className="icon diagram-2" />,
+    //   keywords: ["excalidraw", "diagram", "drawing"],
+    //   onSelect: () =>
+    //     editor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined),
+    // }),
     new ComponentPickerOption("Poll", {
       icon: <i className="icon poll" />,
       keywords: ["poll", "vote"],
