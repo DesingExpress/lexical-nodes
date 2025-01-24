@@ -232,111 +232,111 @@ function Editor({ plugins, shortcuts, editorRef }) {
   }, [registerCommand]);
   return (
     <Fragment>
-      <div className="editor-shell">
-        <ToolbarPlugin
-          editor={editor}
-          activeEditor={activeEditor}
-          setActiveEditor={setActiveEditor}
-          setIsLinkEditMode={setIsLinkEditMode}
-          shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
-        />
-        <div className="editor-container">
-          <AutoFocusPlugin />
-          <HistoryPlugin externalHistoryState={historyState} />
-          {isRichText ? (
-            <div className="editor-inner" tabIndex={-1}>
-              <RichTextPlugin
-                contentEditable={
-                  <div className="editor-scroller">
-                    <div className="editor" ref={onRef}>
-                      <ContentEditable
-                        className={"ContentEditable__root"}
-                        aria-placeholder={placeholder}
-                        placeholder={
-                          <div className={"ContentEditable__placeholder"}>
-                            {placeholder}
-                          </div>
-                        }
-                      />
-                    </div>
+      {/* <div className="editor-shell"> */}
+      <ToolbarPlugin
+        editor={editor}
+        activeEditor={activeEditor}
+        setActiveEditor={setActiveEditor}
+        setIsLinkEditMode={setIsLinkEditMode}
+        shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
+      />
+      <div className="editor-container">
+        <AutoFocusPlugin />
+        <HistoryPlugin externalHistoryState={historyState} />
+        {isRichText ? (
+          <div className="editor-inner" tabIndex={-1}>
+            <RichTextPlugin
+              contentEditable={
+                <div className="editor-scroller">
+                  <div className="editor" ref={onRef}>
+                    <ContentEditable
+                      className={"ContentEditable__root"}
+                      aria-placeholder={placeholder}
+                      placeholder={
+                        <div className={"ContentEditable__placeholder"}>
+                          {placeholder}
+                        </div>
+                      }
+                    />
                   </div>
-                }
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              <TabIndentationPlugin maxIndent={0} />
-              <TabFocusPlugin />
-              {/* <ComponentPickerMenuPlugin /> */}
-              <ListPlugin />
-              <MarkdownShortcutPlugin plugins={shortcuts} />
-              <EquationsPlugin />
-              <HorizontalRulePlugin />
-              <TablePlugin
-                hasCellMerge={tableCellMerge}
-                hasCellBackgroundColor={tableCellBackgroundColor}
-                hasHorizontalScroll={tableHorizontalScroll}
-              />
-              <TableCellResizer />
-              {/* <AutoEmbedPlugin />
+                </div>
+              }
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <TabIndentationPlugin maxIndent={0} />
+            <TabFocusPlugin />
+            {/* <ComponentPickerMenuPlugin /> */}
+            <ListPlugin />
+            <MarkdownShortcutPlugin plugins={shortcuts} />
+            <EquationsPlugin />
+            <HorizontalRulePlugin />
+            <TablePlugin
+              hasCellMerge={tableCellMerge}
+              hasCellBackgroundColor={tableCellBackgroundColor}
+              hasHorizontalScroll={tableHorizontalScroll}
+            />
+            <TableCellResizer />
+            {/* <AutoEmbedPlugin />
               <CollapsiblePlugin />
               <ExcalidrawPlugin />
               <LayoutPlugin />
               <PageBreakPlugin />
               <PollPlugin /> */}
-              {floatingAnchorElem && (
-                <>
-                  <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
-                  {/* <CodeActionMenuPlugin anchorElem={floatingAnchorElem} /> */}
-                  {/* <FloatingLinkEditorPlugin
+            {floatingAnchorElem && (
+              <>
+                <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+                {/* <CodeActionMenuPlugin anchorElem={floatingAnchorElem} /> */}
+                {/* <FloatingLinkEditorPlugin
                       anchorElem={floatingAnchorElem}
                       isLinkEditMode={isLinkEditMode}
                       setIsLinkEditMode={setIsLinkEditMode}
                     /> */}
-                  <TableCellActionMenuPlugin
-                    anchorElem={floatingAnchorElem}
-                    cellMerge={true}
-                  />
-                  <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
-                  <FloatingTextFormatToolbarPlugin
-                    anchorElem={floatingAnchorElem}
-                    setIsLinkEditMode={setIsLinkEditMode}
-                  />
-                </>
-              )}
-              <InlineImagePlugin />
-              {/* <ImagesPlugin /> */}
-              <EditorRefPlugin editorRef={editorRef} />
-              {plugins.map((T) => (
-                <T
+                <TableCellActionMenuPlugin
                   anchorElem={floatingAnchorElem}
-                  editor={editor}
-                  activeEditor={activeEditor}
-                  externalHistoryState={historyState}
+                  cellMerge={true}
                 />
-              ))}
-              {/* <SlashMenuPlugin anchorElem={floatingAnchorElem} /> */}
-            </div>
-          ) : (
-            <>
-              <PlainTextPlugin
-                contentEditable={
-                  <ContentEditable
-                    className={"ContentEditable__root plain"}
-                    aria-placeholder={placeholder}
-                    placeholder={
-                      <div className={"ContentEditable__placeholder"}>
-                        {placeholder}
-                      </div>
-                    }
-                  />
-                }
-                ErrorBoundary={LexicalErrorBoundary}
+                <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
+                <FloatingTextFormatToolbarPlugin
+                  anchorElem={floatingAnchorElem}
+                  setIsLinkEditMode={setIsLinkEditMode}
+                />
+              </>
+            )}
+            <InlineImagePlugin />
+            {/* <ImagesPlugin /> */}
+            <EditorRefPlugin editorRef={editorRef} />
+            {plugins.map((T) => (
+              <T
+                anchorElem={floatingAnchorElem}
+                editor={editor}
+                activeEditor={activeEditor}
+                externalHistoryState={historyState}
               />
-              <HistoryPlugin externalHistoryState={historyState} />
-            </>
-          )}
-          <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
-        </div>
+            ))}
+            {/* <SlashMenuPlugin anchorElem={floatingAnchorElem} /> */}
+          </div>
+        ) : (
+          <>
+            <PlainTextPlugin
+              contentEditable={
+                <ContentEditable
+                  className={"ContentEditable__root plain"}
+                  aria-placeholder={placeholder}
+                  placeholder={
+                    <div className={"ContentEditable__placeholder"}>
+                      {placeholder}
+                    </div>
+                  }
+                />
+              }
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <HistoryPlugin externalHistoryState={historyState} />
+          </>
+        )}
+        <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
       </div>
+      {/* </div> */}
       <TestRawEditor />
     </Fragment>
   );
@@ -403,11 +403,12 @@ export default function Lexical({
             <TableContext>
               <ToolbarContext>
                 <div
-                  style={{
-                    overflow: "hidden auto",
-                    height: "100%",
-                    width: "100%",
-                  }}
+                  className="editor-shell"
+                  // style={{
+                  //   overflow: "hidden auto",
+                  //   height: "100%",
+                  //   width: "100%",
+                  // }}
                 >
                   <Editor plugins={plugins} shortcuts={shortcuts} />
                 </div>
