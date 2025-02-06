@@ -16,9 +16,7 @@ import {
   $isTableCellNode,
   $isTableNode,
   getTableElement,
-  TableCellNode,
   TableNode,
-  TableRowNode,
 } from "@lexical/table";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { $getNearestNodeFromDOMNode, isHTMLElement, NodeKey } from "lexical";
@@ -28,7 +26,9 @@ import { createPortal } from "react-dom";
 
 import { useDebounce } from "../../hooks/useDebounce";
 
-const BUTTON_WIDTH_PX = 20;
+import AddIcon from "@mui/icons-material/Add";
+
+const BUTTON_WIDTH_PX = 33;
 
 function TableHoverActionsContainer({ anchorElem }) {
   const [editor] = useLexicalComposerContext();
@@ -248,14 +248,18 @@ function TableHoverActionsContainer({ anchorElem }) {
           className={"PlaygroundEditorTheme__tableAddRows"}
           style={{ ...position }}
           onClick={() => insertAction(true)}
-        />
+        >
+          <AddIcon />
+        </button>
       )}
       {isShownColumn && (
         <button
           className={"PlaygroundEditorTheme__tableAddColumns"}
           style={{ ...position }}
           onClick={() => insertAction(false)}
-        />
+        >
+          <AddIcon />
+        </button>
       )}
     </>
   );
