@@ -29,7 +29,12 @@ export class lexicalNode extends Pure {
     const Comp = ({ isEditMode = true, value = "", onSave }) => {
       return (
         <LitegraphSlotContext node={this}>
-          <Editor plugins={plugins} isEditMode={isEditMode} value={value} onSave={onSave} />
+          <Editor
+            plugins={plugins}
+            isEditMode={isEditMode}
+            value={value}
+            onSave={onSave}
+          />
         </LitegraphSlotContext>
       );
     };
@@ -50,5 +55,21 @@ export class lexicalNode extends Pure {
       return Promise.all(_resultPromiseArr);
     }
     return;
+  }
+}
+
+export class ComponentGen extends Pure {
+  static path = "Develop";
+  static title = "ComponentGen";
+  static description = "please describe your node";
+  constructor() {
+    super();
+    this.addInput("compFunc", "component");
+    this.addOutput("component", "component");
+  }
+
+  onExecute() {
+    const Comp = this.getInputData(1);
+    this.setOutputData(1, <Comp />);
   }
 }
