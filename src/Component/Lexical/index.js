@@ -55,8 +55,8 @@ import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
 // import { LayoutPlugin } from "./plugins/LayoutPlugin";
 // import ExcalidrawPlugin from "./plugins/ExcalidrawPlugin";
 // import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
-import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
-import ComponentPickerMenuPlugin from "./plugins/ComponentPickerPlugin";
+// import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
+// import ComponentPickerMenuPlugin from "./plugins/ComponentPickerPlugin";
 import TableCellResizer from "./plugins/TablePlugin/TableCellResizer";
 import {
   DEFAULT_TRANSFORMERS,
@@ -178,6 +178,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
       tableHorizontalScroll,
     },
   } = useSettings();
+
   const { historyState } = useSharedHistoryContext();
   const isEditable = useLexicalEditable();
   const [floatingAnchorElem, setFloatingAnchorElem] = useState(null);
@@ -232,7 +233,6 @@ function Editor({ plugins, shortcuts, editorRef }) {
   }, [registerCommand]);
   return (
     <Fragment>
-      {/* <div className="editor-shell"> */}
       <ToolbarPlugin
         editor={editor}
         activeEditor={activeEditor}
@@ -240,11 +240,19 @@ function Editor({ plugins, shortcuts, editorRef }) {
         setIsLinkEditMode={setIsLinkEditMode}
         shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
       />
-      <div className="editor-container">
+      <div className={`editor-container ${!isRichText ? "plain-text" : ""}`}>
         <AutoFocusPlugin />
-        <HistoryPlugin externalHistoryState={historyState} />
+        {plugins.map((T) => (
+          <T
+            anchorElem={floatingAnchorElem}
+            editor={editor}
+            activeEditor={activeEditor}
+            externalHistoryState={historyState}
+          />
+        ))}
         {isRichText ? (
-          <div className="editor-inner" tabIndex={-1}>
+          <>
+            <HistoryPlugin externalHistoryState={historyState} />
             <RichTextPlugin
               contentEditable={
                 <div className="editor-scroller">
@@ -263,38 +271,32 @@ function Editor({ plugins, shortcuts, editorRef }) {
               }
               ErrorBoundary={LexicalErrorBoundary}
             />
-            <TabIndentationPlugin maxIndent={0} />
-            <TabFocusPlugin />
-            {/* <ComponentPickerMenuPlugin /> */}
             <ListPlugin />
-            <MarkdownShortcutPlugin plugins={shortcuts} />
-            <EquationsPlugin />
-            <HorizontalRulePlugin />
             <TablePlugin
               hasCellMerge={tableCellMerge}
               hasCellBackgroundColor={tableCellBackgroundColor}
               hasHorizontalScroll={tableHorizontalScroll}
             />
             <TableCellResizer />
-            {/* <AutoEmbedPlugin />
-              <CollapsiblePlugin />
-              <ExcalidrawPlugin />
-              <LayoutPlugin />
-              <PageBreakPlugin />
-              <PollPlugin /> */}
-            {floatingAnchorElem && (
+            <EquationsPlugin />
+            <HorizontalRulePlugin />
+            <InlineImagePlugin />
+            <TabFocusPlugin />
+            <TabIndentationPlugin maxIndent={0} />
+            <MarkdownShortcutPlugin plugins={shortcuts} />
+            {floatingAnchorElem && !isSmallWidthViewport && (
               <>
                 <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
                 {/* <CodeActionMenuPlugin anchorElem={floatingAnchorElem} /> */}
                 {/* <FloatingLinkEditorPlugin
-                      anchorElem={floatingAnchorElem}
-                      isLinkEditMode={isLinkEditMode}
-                      setIsLinkEditMode={setIsLinkEditMode}
-                    /> */}
-                <TableCellActionMenuPlugin
-                  anchorElem={floatingAnchorElem}
-                  cellMerge={true}
-                />
+                anchorElem={floatingAnchorElem}
+                isLinkEditMode={isLinkEditMode}
+                setIsLinkEditMode={setIsLinkEditMode}
+              /> */}
+                {/* <TableCellActionMenuPlugin
+                anchorElem={floatingAnchorElem}
+                cellMerge={true}
+              /> */}
                 <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
                 <FloatingTextFormatToolbarPlugin
                   anchorElem={floatingAnchorElem}
@@ -302,19 +304,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
                 />
               </>
             )}
-            <InlineImagePlugin />
-            {/* <ImagesPlugin /> */}
-            <EditorRefPlugin editorRef={editorRef} />
-            {plugins.map((T) => (
-              <T
-                anchorElem={floatingAnchorElem}
-                editor={editor}
-                activeEditor={activeEditor}
-                externalHistoryState={historyState}
-              />
-            ))}
-            {/* <SlashMenuPlugin anchorElem={floatingAnchorElem} /> */}
-          </div>
+          </>
         ) : (
           <>
             <PlainTextPlugin
@@ -336,7 +326,6 @@ function Editor({ plugins, shortcuts, editorRef }) {
         )}
         <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
       </div>
-      {/* </div> */}
       <TestRawEditor />
     </Fragment>
   );
@@ -404,11 +393,11 @@ export default function Lexical({
               <ToolbarContext>
                 <div
                   className="editor-shell"
-                  // style={{
-                  //   overflow: "hidden auto",
-                  //   height: "100%",
-                  //   width: "100%",
-                  // }}
+                  style={{
+                    overflow: "hidden auto",
+                    height: "100%",
+                    width: "100%",
+                  }}
                 >
                   <Editor plugins={plugins} shortcuts={shortcuts} />
                 </div>
