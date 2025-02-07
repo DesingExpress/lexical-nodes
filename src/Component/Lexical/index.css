@@ -380,52 +380,52 @@ i.bucket {
   /* background-image: url(images/icons/paint-bucket.svg); */
 }
 
-i.bold {
-  /* background-image: url(images/icons/type-bold.svg); */
-}
-
-i.italic {
-  /* background-image: url(images/icons/type-italic.svg); */
-}
-
 i.clear {
   /* background-image: url(images/icons/trash.svg); */
 }
 
+i.bold {
+  /* background-image: url("../images/icons/type-bold.svg"); */
+}
+
+i.italic {
+  /* background-image: url("../images/icons/type-italic.svg"); */
+}
+
 i.code {
-  /* background-image: url(images/icons/code.svg); */
+  /* background-image: url("../images/icons/code.svg"); */
 }
 
 i.underline {
-  /* background-image: url(images/icons/type-underline.svg); */
+  /* background-image: url("../images/icons/type-underline.svg"); */
 }
 
 i.uppercase {
-  /* background-image: url(images/icons/type-uppercase.svg); */
+  /* background-image: url("../images/icons/type-uppercase.svg"); */
 }
 
 i.lowercase {
-  /* background-image: url(images/icons/type-lowercase.svg); */
+  /* background-image: url("../images/icons/type-lowercase.svg"); */
 }
 
 i.capitalize {
-  /* background-image: url(images/icons/type-capitalize.svg); */
+  /* background-image: url("../images/icons/type-capitalize.svg"); */
 }
 
 i.strikethrough {
-  /* background-image: url(images/icons/type-strikethrough.svg); */
+  /* background-image: url("../images/icons/type-strikethrough.svg"); */
 }
 
 i.subscript {
-  /* background-image: url(images/icons/type-subscript.svg); */
+  /* background-image: url("../images/icons/type-subscript.svg"); */
 }
 
 i.superscript {
-  /* background-image: url(images/icons/type-superscript.svg); */
+  /* background-image: url("../images/icons/type-superscript.svg"); */
 }
 
 i.link {
-  /* background-image: url(images/icons/link.svg); */
+  /* background-image: url("../images/icons/link.svg"); */
 }
 
 i.horizontal-rule {
@@ -1795,7 +1795,7 @@ button.item.dropdown-item-active i {
   display: block;
   position: relative;
   outline: 0;
-  padding: 8px 28px 40px;
+  padding: 8px 50px 40px 28px !important;
   min-height: 400px;
 }
 @media (max-width: 1025px) {

@@ -51,7 +51,6 @@ import invariant from "../../shared/invariant";
 
 import useModal from "../../hooks/useModal";
 import ColorPicker from "./ui/ColorPicker";
-// import ColorPicker from "../../ui/ColorPicker";
 
 function computeSelectionCount(selection) {
   const selectionShape = selection.getShape();
@@ -108,18 +107,6 @@ function currentCellBackgroundColor(editor) {
     return null;
   });
 }
-
-// type TableCellActionMenuProps = Readonly<{
-//   contextRef: {current: null | HTMLElement};
-//   onClose: () => void;
-//   setIsMenuOpen: (isOpen: boolean) => void;
-//   showColorPickerModal: (
-//     title: string,
-//     showModal: (onClose: () => void) => JSX.Element,
-//   ) => void;
-//   tableCellNode: TableCellNode;
-//   cellMerge: boolean;
-// }>;
 
 function TableActionMenu({
   onClose,
