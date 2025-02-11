@@ -26,9 +26,6 @@ import {
   getTableObserverFromTableElement,
   TableCellHeaderStates,
   TableCellNode,
-  TableObserver,
-  TableRowNode,
-  TableSelection,
 } from "@lexical/table";
 import { mergeRegister } from "@lexical/utils";
 import {
@@ -47,10 +44,11 @@ import {
 import * as React from "react";
 import { ReactPortal, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import invariant from "../../shared/invariant";
+import invariant from "src/Component/Lexical/shared/invariant";
 
-import useModal from "../../hooks/useModal";
-import ColorPicker from "./ui/ColorPicker";
+import useModal from "src/Component/Lexical/hooks/useModal";
+import ColorPicker from "../ui/ColorPicker";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 function computeSelectionCount(selection) {
   const selectionShape = selection.getShape();
@@ -629,20 +627,20 @@ function TableActionMenu({
 
 function TableCellActionMenuContainer({ anchorElem, cellMerge }) {
   const [editor] = useLexicalComposerContext();
-
   const menuButtonRef = useRef(null);
   const menuRootRef = useRef(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const [tableCellNode, setTableMenuCellNode] = useState(null);
-
   const [colorPickerModal, showColorPickerModal] = useModal();
+
+  console.log("tableCellNode:", tableCellNode);
 
   const $moveMenu = useCallback(() => {
     const menu = menuButtonRef.current;
     const selection = $getSelection();
     const nativeSelection = getDOMSelection(editor._window);
     const activeElement = document.activeElement;
+
     function disable() {
       if (menu) {
         menu.classList.remove("table-cell-action-button-container--active");
@@ -668,12 +666,12 @@ function TableCellActionMenuContainer({ anchorElem, cellMerge }) {
       const tableCellNodeFromSelection = $getTableCellNodeFromLexicalNode(
         selection.anchor.getNode()
       );
-
+      console.log("tableCellNodeFromSelction", tableCellNodeFromSelection);
       if (tableCellNodeFromSelection == null) {
         return disable();
       }
 
-      tableCellParentNodeDOM = editor.getElementByKey(
+      const tableCellParentNodeDOM = editor.getElementByKey(
         tableCellNodeFromSelection.getKey()
       );
 
@@ -691,14 +689,12 @@ function TableCellActionMenuContainer({ anchorElem, cellMerge }) {
         tableNode,
         editor.getElementByKey(tableNode.getKey())
       );
-
       invariant(
         tableElement !== null,
         "TableActionMenu: Expected to find tableElement in DOM"
       );
-
-      tableObserver = getTableObserverFromTableElement(tableElement);
       setTableMenuCellNode(tableCellNodeFromSelection);
+      tableObserver = getTableObserverFromTableElement(tableElement);
     } else if ($isTableSelection(selection)) {
       const anchorNode = $getTableCellNodeFromLexicalNode(
         selection.anchor.getNode()
@@ -777,6 +773,7 @@ function TableCellActionMenuContainer({ anchorElem, cellMerge }) {
   });
 
   const prevTableCellDOM = useRef(tableCellNode);
+  console.log("prevTableCellDOM: ", prevTableCellDOM);
 
   useEffect(() => {
     if (prevTableCellDOM.current !== tableCellNode) {
@@ -788,7 +785,7 @@ function TableCellActionMenuContainer({ anchorElem, cellMerge }) {
 
   return (
     <div className="table-cell-action-button-container" ref={menuButtonRef}>
-      {tableCellNode != null && (
+      {tableCellNode !== null && (
         <>
           <button
             type="button"
@@ -799,7 +796,8 @@ function TableCellActionMenuContainer({ anchorElem, cellMerge }) {
             }}
             ref={menuRootRef}
           >
-            <i className="chevron-down" />
+            <KeyboardArrowDownIcon />
+            {/* <i className="chevron-down" /> */}
           </button>
           {colorPickerModal}
           {isMenuOpen && (

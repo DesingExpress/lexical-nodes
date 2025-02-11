@@ -6,7 +6,10 @@
  *
  */
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import useLexicalEditable from "@lexical/react/useLexicalEditable";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
+
+import "./TableCellResizer.css";
+
 import {
   $computeTableMapSkipCellCheck,
   $getTableNodeFromLexicalNodeOrThrow,
@@ -30,10 +33,8 @@ function TableCellResizer({ editor }) {
   const targetRef = useRef(null);
   const resizerRef = useRef(null);
   const tableRectRef = useRef(null);
-
   const mouseStartPosRef = useRef(null);
   const [mouseCurrentPos, updateMouseCurrentPos] = useState(null);
-
   const [activeCell, updateActiveCell] = useState(null);
   const [isMouseDown, updateIsMouseDown] = useState(false);
   const [draggingDirection, updateDraggingDirection] = useState(null);
@@ -55,7 +56,6 @@ function TableCellResizer({ editor }) {
       if (tableNode.getColWidths()) {
         return tableNode;
       }
-
       const numColumns = tableNode.getColumnCount();
       const columnWidth = MIN_COLUMN_WIDTH;
 
@@ -67,10 +67,10 @@ function TableCellResizer({ editor }) {
   useEffect(() => {
     const onMouseMove = (event) => {
       const target = event.target;
+
       if (!isHTMLElement(target)) {
         return;
       }
-
       if (draggingDirection) {
         updateMouseCurrentPos({
           x: event.clientX,
@@ -82,11 +82,10 @@ function TableCellResizer({ editor }) {
       if (resizerRef.current && resizerRef.current.contains(target)) {
         return;
       }
-
       if (targetRef.current !== target) {
         targetRef.current = target;
         const cell = getDOMCellFromTarget(target);
-
+        // console.log("cell", cell);
         if (cell && activeCell !== cell) {
           editor.getEditorState().read(
             () => {
@@ -109,10 +108,11 @@ function TableCellResizer({ editor }) {
               targetRef.current = target;
               tableRectRef.current = tableElement.getBoundingClientRect();
               updateActiveCell(cell);
+              console.log(activeCell);
             },
             { editor }
           );
-        } else if (cell == null) {
+        } else if (cell === null) {
           resetState();
         }
       }
@@ -377,21 +377,23 @@ function TableCellResizer({ editor }) {
 
   const resizerStyles = getResizers();
 
+  console.log(activeCell, isMouseDown);
+
   return (
-    <div ref={resizerRef}>
-      {activeCell != null && !isMouseDown && (
+    <div ref={resizerRef} className="check box">
+      {activeCell !== null && !isMouseDown && (
         <>
           <div
             className="TableCellResizer__resizer TableCellResizer__ui"
             style={resizerStyles.right || undefined}
             onMouseDown={toggleResize("right")}
-            onMouseUp={toggleResize("right")}
+            // onMouseUp={toggleResize("right")}
           />
           <div
             className="TableCellResizer__resizer TableCellResizer__ui"
             style={resizerStyles.bottom || undefined}
             onMouseDown={toggleResize("bottom")}
-            onMouseUp={toggleResize("bottom")}
+            // onMouseUp={toggleResize("bottom")}
           />
         </>
       )}
