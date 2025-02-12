@@ -249,7 +249,7 @@ function TableHoverActionsContainer({ anchorElem }) {
           style={{ ...position }}
           onClick={() => insertAction(true)}
         >
-          <AddIcon />
+          <AddIcon style={{ opacity: 0.4, width: "18px", height: "18px" }} />
         </button>
       )}
       {isShownColumn && (
@@ -258,7 +258,7 @@ function TableHoverActionsContainer({ anchorElem }) {
           style={{ ...position }}
           onClick={() => insertAction(false)}
         >
-          <AddIcon />
+          <AddIcon style={{ opacity: 0.4, width: "18px", height: "18px" }} />
         </button>
       )}
     </>

@@ -32,13 +32,49 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Divider, dividerClasses, styled } from "@mui/material";
 
+const TableCellActionMenuButton = styled("div")(({ theme }) => ({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  willChange: "transform",
+  [`& .table-cell-action-button-container--active`]: {
+    pointerEvents: "auto",
+    opacity: 1,
+  },
+  [`& .table-cell-action-button-container--inactive`]: {
+    pointerEvents: "none",
+    opacity: 0,
+  },
+  [`& > .table-cell-action-button`]: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: "5px",
+    border: 0,
+    position: "absolute",
+    top: "0 !important",
+    right: "0 !important",
+    borderRadius: "15px",
+    color: "#222",
+    cursor: "pointer",
+    // [`& > .chevron-down`]: {
+    //   width: "8px",
+    //   height: "8px",
+    //   display: "inline-block",
+    //   backgroundColor: "transparent",
+    //   backgroundSize: "contain",
+    //   backgroundImage: `url(images/icons/chevron-down.svg)`
+    // },
+  },
+}));
+
 const DropDownContainer = styled("div")(({ theme }) => ({
   zIndex: 100,
   display: "flex",
   flexDirection: "column",
   position: "fixed",
   boxShadow: `0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5)`,
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5)`,
   borderRadius: "8px",
   minHeight: "40px",
   backgroundColor: "#fff",
@@ -554,7 +590,10 @@ function TableCellActionMenuContainer({ anchorElem, cellMerge }) {
     prevTableCellDOM.current = tableCellNode;
   }, [prevTableCellDOM, tableCellNode]);
   return (
-    <div className="table-cell-action-button-container" ref={menuButtonRef}>
+    <TableCellActionMenuButton
+      className="table-cell-action-button-container"
+      ref={menuButtonRef}
+    >
       {tableCellNode !== null && (
         <>
           <button
@@ -565,7 +604,9 @@ function TableCellActionMenuContainer({ anchorElem, cellMerge }) {
             }}
             ref={menuRootRef}
           >
-            <KeyboardArrowDownIcon />
+            <KeyboardArrowDownIcon
+              style={{ opacity: 0.4, width: "18px", height: "16px" }}
+            />
           </button>
           {isMenuOpen && (
             <TableActionMenu
@@ -578,7 +619,7 @@ function TableCellActionMenuContainer({ anchorElem, cellMerge }) {
           )}
         </>
       )}
-    </div>
+    </TableCellActionMenuButton>
   );
 }
 
