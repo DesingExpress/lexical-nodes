@@ -5,6 +5,7 @@ import { registerMarkdownShortcuts } from "#/@lexical/markdown/MarkdownShortcuts
 // import { TRANSFORMERS } from "../markdown/index.js";
 import {
   ELEMENT_TRANSFORMERS,
+  MULTILINE_ELEMENT_TRANSFORMERS,
   TEXT_FORMAT_TRANSFORMERS,
   TEXT_MATCH_TRANSFORMERS,
 } from "#/@lexical/markdown/index.js";
@@ -15,6 +16,7 @@ import {
   HorizontalRuleNode,
 } from "@lexical/react/LexicalHorizontalRuleNode";
 import { createRef, useEffect } from "react";
+import { TABLE } from "../TablePlugin/transformer";
 
 const HR = {
   dependencies: [HorizontalRuleNode],
@@ -38,9 +40,10 @@ const HR = {
 };
 
 export const DEFAULT_TRANSFORMERS = [
+  TABLE,
   HR,
   ...ELEMENT_TRANSFORMERS,
-  // ...MULTILINE_ELEMENT_TRANSFORMERS,
+  ...MULTILINE_ELEMENT_TRANSFORMERS,
   ...TEXT_FORMAT_TRANSFORMERS,
   ...TEXT_MATCH_TRANSFORMERS,
 ];
