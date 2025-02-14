@@ -8,6 +8,7 @@
 
 import "../style.css";
 import "./index.css";
+import { SelectionAlwaysOnDisplay } from "@lexical/react/LexicalSelectionAlwaysOnDisplay";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -46,18 +47,6 @@ import TestRawEditor from "./TestRawEditor";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FRONTMATTER } from "./plugins/FrontmatterPlugin/transformer";
 import { TableContext, TablePlugin } from "./plugins/TablePlugin/TablePlugin";
-import TableCellActionMenuPlugin from "./plugins/TablePlugin/TableActionMenuPlugin";
-import TableHoverActionsPlugin from "./plugins/TablePlugin/TableHoverActionsPlugin";
-import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
-// import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
-// import PollPlugin from "./plugins/PollPlugin";
-// import PageBreakPlugin from "./plugins/PageBreakPlugin";
-// import { LayoutPlugin } from "./plugins/LayoutPlugin";
-// import ExcalidrawPlugin from "./plugins/ExcalidrawPlugin";
-// import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
-// import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
-// import ComponentPickerMenuPlugin from "./plugins/ComponentPickerPlugin";
-import TableCellResizer from "./plugins/TablePlugin/TableCellResizer";
 import {
   DEFAULT_TRANSFORMERS,
   MarkdownShortcutPlugin,
@@ -74,6 +63,10 @@ import {
 import { TABLE } from "./plugins/TablePlugin/transformer";
 import useLexicalEditable from "@lexical/react/useLexicalEditable";
 import { CAN_USE_DOM } from "@lexical/utils";
+import TableHoverActionsPlugin from "./plugins/TablePlugin/TableHoverActionPlugin/TableHoverActionsPlugin";
+import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin/TableOfContentsPlugin";
+import TableActionMenuPlugin from "./plugins/TablePlugin/TableActionMenuPlugin/TableActionMenuPlugin";
+import TableCellResizerPlugin from "./plugins/TablePlugin/TableCellResizer/TableCellResizer";
 
 const placeholder = "Enter some rich text...";
 
@@ -176,6 +169,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
       tableCellMerge,
       tableCellBackgroundColor,
       tableHorizontalScroll,
+      selectionAlwaysOnDisplay,
     },
   } = useSettings();
 
@@ -242,6 +236,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
       />
       <div className={`editor-container ${!isRichText ? "plain-text" : ""}`}>
         <AutoFocusPlugin />
+        {selectionAlwaysOnDisplay && <SelectionAlwaysOnDisplay />}
         {plugins.map((T) => (
           <T
             anchorElem={floatingAnchorElem}
@@ -277,7 +272,7 @@ function Editor({ plugins, shortcuts, editorRef }) {
               hasCellBackgroundColor={tableCellBackgroundColor}
               hasHorizontalScroll={tableHorizontalScroll}
             />
-            <TableCellResizer />
+            <TableCellResizerPlugin />
             <EquationsPlugin />
             <HorizontalRulePlugin />
             <InlineImagePlugin />
@@ -289,14 +284,14 @@ function Editor({ plugins, shortcuts, editorRef }) {
                 <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
                 {/* <CodeActionMenuPlugin anchorElem={floatingAnchorElem} /> */}
                 {/* <FloatingLinkEditorPlugin
-                anchorElem={floatingAnchorElem}
-                isLinkEditMode={isLinkEditMode}
-                setIsLinkEditMode={setIsLinkEditMode}
-              /> */}
-                {/* <TableCellActionMenuPlugin
-                anchorElem={floatingAnchorElem}
-                cellMerge={true}
-              /> */}
+                  anchorElem={floatingAnchorElem}
+                  isLinkEditMode={isLinkEditMode}
+                  setIsLinkEditMode={setIsLinkEditMode}
+                /> */}
+                <TableActionMenuPlugin
+                  anchorElem={floatingAnchorElem}
+                  cellMerge={true}
+                />
                 <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
                 <FloatingTextFormatToolbarPlugin
                   anchorElem={floatingAnchorElem}
@@ -399,7 +394,7 @@ export default function Lexical({
                     width: "100%",
                   }}
                 >
-                  <Editor plugins={plugins} shortcuts={shortcuts} />
+                  <Editor plugins={plugins} shortcuts={_shortcuts} />
                 </div>
               </ToolbarContext>
             </TableContext>
