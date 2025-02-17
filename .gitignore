@@ -25,3 +25,5 @@ yarn-error.log*
 *.xnode
 
 .nvm
+
+package-lock.json
