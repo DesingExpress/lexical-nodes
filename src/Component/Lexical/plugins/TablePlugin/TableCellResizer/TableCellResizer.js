@@ -190,7 +190,6 @@ function TableCellResizer({ editor }) {
         if (!$isTableCellNode(tableCellNode)) {
           throw new Error("TableCellResizer: Table cell node not found.");
         }
-
         const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
 
         const tableColumnIndex =
@@ -228,6 +227,7 @@ function TableCellResizer({ editor }) {
     (direction) => (event) => {
       event.preventDefault();
       event.stopPropagation();
+
       if (!activeCell) {
         throw new Error("TableCellResizer: Expected active cell.");
       }
@@ -235,31 +235,44 @@ function TableCellResizer({ editor }) {
       if (draggingDirection === direction && mouseStartPosRef.current) {
         const { x, y } = mouseStartPosRef.current;
 
-        if (activeCell === null) {
+        if (!activeCell) {
           return;
         }
 
+        const zoom = calculateZoomLevel(activeCell.elem);
         const { height, width } = activeCell.elem.getBoundingClientRect();
+        const adjustedWidth = width / zoom;
+        const adjustedHeight = height / zoom;
 
         if (isHeightChanging(direction)) {
-          const heightChange = Math.abs(event.clientY - y);
-
+          const heightChange = Math.abs((event.clientY - y) / zoom);
           const isShrinking = direction === "bottom" && y > event.clientY;
 
           updateRowHeight(
             Math.max(
-              isShrinking ? height - heightChange : heightChange + height,
+              isShrinking
+                ? adjustedHeight - heightChange
+                : heightChange + adjustedHeight,
               MIN_ROW_HEIGHT
             )
           );
         } else {
-          const widthChange = Math.abs(event.clientX - x);
-
+          const widthChange = (event.clientX - x) / zoom;
           const isShrinking = direction === "right" && x > event.clientX;
 
+          // updateColumnWidth(
+          //   Math.max(
+          //     isShrinking
+          //       ? adjustedWidth - widthChange
+          //       : widthChange + adjustedWidth,
+          //     MIN_COLUMN_WIDTH
+          //   )
+          // );
           updateColumnWidth(
             Math.max(
-              isShrinking ? width - widthChange : widthChange + width,
+              isShrinking
+                ? adjustedWidth - Math.abs(widthChange)
+                : adjustedWidth + widthChange,
               MIN_COLUMN_WIDTH
             )
           );
