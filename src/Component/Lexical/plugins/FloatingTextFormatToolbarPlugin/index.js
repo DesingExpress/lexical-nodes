@@ -266,7 +266,7 @@ function TextFormatFloatingToolbar({
             {/* <i className="format uppercase" /> */}
             <AbcIcon className="format uppercase" />
           </button>
-          {/* <button
+          <button
             type="button"
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, "lowercase");
@@ -275,8 +275,9 @@ function TextFormatFloatingToolbar({
             title="Lowercase"
             aria-label="Format text to lowercase"
           >
-            <i className="format lowercase" />
-          </button> */}
+            {/* <i className="format lowercase" /> */}
+            <AbcIcon className="format lowercase" />
+          </button>
           <button
             type="button"
             onClick={() => {
