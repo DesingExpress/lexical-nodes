@@ -46,7 +46,10 @@ import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
+  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
+  INDENT_CONTENT_COMMAND,
+  OUTDENT_CONTENT_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
@@ -88,7 +91,16 @@ import {
 
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
-import { Button, Menu, MenuItem } from "@mui/material";
+import {
+  Button,
+  buttonClasses,
+  Divider,
+  Menu,
+  menuClasses,
+  MenuItem,
+  menuItemClasses,
+  styled,
+} from "@mui/material";
 import FormatBoldIcon from "@mui/icons-material/FormatBold";
 import FormatItalicIcon from "@mui/icons-material/FormatItalic";
 import FormatUnderlinedIcon from "@mui/icons-material/FormatUnderlined";
@@ -100,6 +112,21 @@ import RawOffIcon from "@mui/icons-material/RawOff";
 import { ReactComponent as LowercaseIcon } from "../../../images/icons/type-lowercase.svg";
 import { ReactComponent as H1Icon } from "../../../images/icons/type-h1.svg";
 import { ReactComponent as ParagraphIcon } from "../../../images/icons/text-paragraph.svg";
+import FormatAlignLeftIcon from "@mui/icons-material/FormatAlignLeft";
+import FormatAlignCenterIcon from "@mui/icons-material/FormatAlignCenter";
+import FormatAlignRightIcon from "@mui/icons-material/FormatAlignRight";
+import FormatAlignJustifyIcon from "@mui/icons-material/FormatAlignJustify";
+import FormatIndentDecreaseIcon from "@mui/icons-material/FormatIndentDecrease";
+import FormatIndentIncreaseIcon from "@mui/icons-material/FormatIndentIncrease";
+import SubjectIcon from "@mui/icons-material/Subject";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import ChecklistIcon from "@mui/icons-material/Checklist";
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
+import HMobiledataIcon from "@mui/icons-material/HMobiledata";
+import BorderHorizontalIcon from "@mui/icons-material/BorderHorizontal";
+import ImageIcon from "@mui/icons-material/Image";
+import IsoIcon from "@mui/icons-material/Iso";
 
 import {
   $convertFromMarkdownString,
@@ -109,6 +136,56 @@ import { $getFrontmatter } from "../../utils/getMetaData";
 import { MUT_TRANSFORMERS } from "../MarkdownShortcut";
 import { $createCodeNode, $isCodeNode } from "../CodePlugin/node/CodeBlockNode";
 
+const StyledDiv = styled("div")(({ theme }) => ({
+  [`& > .${buttonClasses.root}`]: {
+    minWidth: "unset",
+    color: "#000",
+    [`& > svg`]: {
+      width: "18px",
+      height: "18px",
+    },
+  },
+}));
+
+const menuStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
+
+const ELEMENT_FORMAT_OPTIONS = {
+  center: {
+    icon: "center-align",
+    iconRTL: "center-align",
+    name: "Center Align",
+  },
+  end: {
+    icon: "right-align",
+    iconRTL: "left-align",
+    name: "End Align",
+  },
+  justify: {
+    icon: "justify-align",
+    iconRTL: "justify-align",
+    name: "Justify Align",
+  },
+  left: {
+    icon: "left-align",
+    iconRTL: "left-align",
+    name: "Left Align",
+  },
+  right: {
+    icon: "right-align",
+    iconRTL: "right-align",
+    name: "Right Align",
+  },
+  start: {
+    icon: "left-align",
+    iconRTL: "right-align",
+    name: "Start Align",
+  },
+};
+
 function dropDownActiveClass(active) {
   if (active) {
     return "active dropdown-item-active";
@@ -117,6 +194,9 @@ function dropDownActiveClass(active) {
   }
 }
 
+/**
+ * @TODO MUI에 Heading1, 2, 3 Icon 존재하지 않아 임시로 동일아이콘 사용, 추후 변경 필요
+ */
 function BlockFormatDropDown({
   editor,
   blockType,
@@ -138,9 +218,8 @@ function BlockFormatDropDown({
     setOpen(e.currentTarget);
   }
   return (
-    <Fragment>
+    <StyledDiv>
       <Button
-        sx={{ minWidth: "unset", color: "#000" }}
         onClick={handleClick}
         disabled={disabled}
         buttonAriaLabel="Formatting options for text style"
@@ -154,94 +233,303 @@ function BlockFormatDropDown({
           }
           onClick={() => formatParagraph(editor)}
         >
-          <div className="icon-text-container">
-            <i className="icon paragraph" />
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon paragraph" /> */}
+            <SubjectIcon className="icon" style={{ marginRight: "8px" }} />
             <span className="text">Normal</span>
           </div>
-          <span className="shortcut">{SHORTCUTS.NORMAL}</span>
+          {/* <span className="shortcut">{SHORTCUTS.NORMAL}</span> */}
         </MenuItem>
         <MenuItem
           className={"item wide " + dropDownActiveClass(blockType === "h1")}
           onClick={() => formatHeading(editor, blockType, "h1")}
         >
-          <div className="icon-text-container">
-            <i className="icon h1" />
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon h1" /> */}
+            <HMobiledataIcon className="icon" style={{ marginRight: "8px" }} />
             <span className="text">Heading 1</span>
           </div>
-          <span className="shortcut">{SHORTCUTS.HEADING1}</span>
+          {/* <span className="shortcut">{SHORTCUTS.HEADING1}</span> */}
         </MenuItem>
         <MenuItem
           className={"item wide " + dropDownActiveClass(blockType === "h2")}
           onClick={() => formatHeading(editor, blockType, "h2")}
         >
-          <div className="icon-text-container">
-            <i className="icon h2" />
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon h2" /> */}
+            <HMobiledataIcon className="icon" style={{ marginRight: "8px" }} />
             <span className="text">Heading 2</span>
           </div>
-          <span className="shortcut">{SHORTCUTS.HEADING2}</span>
+          {/* <span className="shortcut">{SHORTCUTS.HEADING2}</span> */}
         </MenuItem>
         <MenuItem
           className={"item wide " + dropDownActiveClass(blockType === "h3")}
           onClick={() => formatHeading(editor, blockType, "h3")}
         >
-          <div className="icon-text-container">
-            <i className="icon h3" />
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon h3" /> */}
+            <HMobiledataIcon className="icon" style={{ marginRight: "8px" }} />
             <span className="text">Heading 3</span>
           </div>
-          <span className="shortcut">{SHORTCUTS.HEADING3}</span>
+          {/* <span className="shortcut">{SHORTCUTS.HEADING3}</span> */}
         </MenuItem>
         <MenuItem
           className={"item wide " + dropDownActiveClass(blockType === "bullet")}
           onClick={() => formatBulletList(editor, blockType)}
         >
-          <div className="icon-text-container">
-            <i className="icon bullet-list" />
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon bullet-list" /> */}
+            <FormatListBulletedIcon
+              className="icon"
+              style={{ marginRight: "8px" }}
+            />
             <span className="text">Bullet List</span>
           </div>
-          <span className="shortcut">{SHORTCUTS.BULLET_LIST}</span>
+          {/* <span className="shortcut">{SHORTCUTS.BULLET_LIST}</span> */}
         </MenuItem>
         <MenuItem
           className={"item wide " + dropDownActiveClass(blockType === "number")}
           onClick={() => formatNumberedList(editor, blockType)}
         >
-          <div className="icon-text-container">
-            <i className="icon numbered-list" />
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon numbered-list" /> */}
+            <FormatListNumberedIcon
+              className="icon"
+              style={{ marginRight: "8px" }}
+            />
             <span className="text">Numbered List</span>
           </div>
-          <span className="shortcut">{SHORTCUTS.NUMBERED_LIST}</span>
+          {/* <span className="shortcut">{SHORTCUTS.NUMBERED_LIST}</span> */}
         </MenuItem>
         <MenuItem
           className={"item wide " + dropDownActiveClass(blockType === "check")}
           onClick={() => formatCheckList(editor, blockType)}
         >
-          <div className="icon-text-container">
-            <i className="icon check-list" />
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon check-list" /> */}
+            <ChecklistIcon className="icon" style={{ marginRight: "8px" }} />
             <span className="text">Check List</span>
           </div>
-          <span className="shortcut">{SHORTCUTS.CHECK_LIST}</span>
+          {/* <span className="shortcut">{SHORTCUTS.CHECK_LIST}</span> */}
         </MenuItem>
         <MenuItem
           className={"item wide " + dropDownActiveClass(blockType === "quote")}
           onClick={() => formatQuote(editor, blockType)}
         >
-          <div className="icon-text-container">
-            <i className="icon quote" />
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon quote" /> */}
+            <FormatQuoteIcon className="icon" style={{ marginRight: "8px" }} />
             <span className="text">Quote</span>
           </div>
-          <span className="shortcut">{SHORTCUTS.QUOTE}</span>
+          {/* <span className="shortcut">{SHORTCUTS.QUOTE}</span> */}
         </MenuItem>
         <MenuItem
           className={"item wide " + dropDownActiveClass(blockType === "code")}
           onClick={() => formatCode(editor, blockType)}
         >
-          <div className="icon-text-container">
-            <i className="icon code" />
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon code" /> */}
+            <CodeIcon className="icon" style={{ marginRight: "8px" }} />
             <span className="text">Code Block</span>
           </div>
-          <span className="shortcut">{SHORTCUTS.CODE_BLOCK}</span>
+          {/* <span className="shortcut">{SHORTCUTS.CODE_BLOCK}</span> */}
         </MenuItem>
       </Menu>
-    </Fragment>
+    </StyledDiv>
+  );
+}
+
+function ElementFormatDropdown({ editor, value, isRTL, disabled = false }) {
+  const formatOption = ELEMENT_FORMAT_OPTIONS[value || "left"];
+  const [isOpen, setOpen] = useState(false);
+  const icon = useMemo(() => {
+    switch (value) {
+      case "left":
+        return <FormatAlignLeftIcon />;
+
+      default:
+        return <FormatAlignLeftIcon />;
+    }
+  }, [value]);
+
+  function handleClick(e) {
+    setOpen(e.currentTarget);
+  }
+
+  console.log(formatOption);
+
+  return (
+    <StyledDiv>
+      <Button
+        onClick={handleClick}
+        disabled={disabled}
+        buttonAriaLabel="Formatting options for text style"
+      >
+        {icon}
+      </Button>
+      <Menu
+        open={!!isOpen}
+        onClose={() => setOpen(false)}
+        anchorEl={isOpen}
+        disabled={disabled}
+        buttonLabel={formatOption.name}
+        buttonIconClassName={`icon ${
+          isRTL ? formatOption.iconRTL : formatOption.icon
+        }`}
+        className="toolbar-item spaced alignment"
+        aria-label="Formatting options for text alignment"
+      >
+        <MenuItem
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
+          }}
+          className="item wide"
+        >
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon left-align" /> */}
+            <FormatAlignLeftIcon
+              className="icon"
+              style={{ marginRight: "8px" }}
+            />
+            <span className="text">Left Align</span>
+          </div>
+          {/* <span className="shortcut">{SHORTCUTS.LEFT_ALIGN}</span> */}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
+          }}
+          className="item wide"
+        >
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon center-align" /> */}
+            <FormatAlignCenterIcon
+              className="icon"
+              style={{ marginRight: "8px" }}
+            />
+            <span className="text">Center Align</span>
+          </div>
+          {/* <span className="shortcut">{SHORTCUTS.CENTER_ALIGN}</span> */}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
+          }}
+          className="item wide"
+        >
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon right-align" /> */}
+            <FormatAlignRightIcon
+              className="icon"
+              style={{ marginRight: "8px" }}
+            />
+            <span className="text">Right Align</span>
+          </div>
+          {/* <span className="shortcut">{SHORTCUTS.RIGHT_ALIGN}</span> */}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify");
+          }}
+          className="item wide"
+        >
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className="icon justify-align" /> */}
+            <FormatAlignJustifyIcon
+              className="icon"
+              style={{ marginRight: "8px" }}
+            />
+            <span className="text">Justify Align</span>
+          </div>
+          {/* <span className="shortcut">{SHORTCUTS.JUSTIFY_ALIGN}</span> */}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "start");
+          }}
+          className="item wide"
+        >
+          {/* <i
+            className={`icon ${
+              isRTL
+                ? ELEMENT_FORMAT_OPTIONS.start.iconRTL
+                : ELEMENT_FORMAT_OPTIONS.start.icon
+            }`}
+          /> */}
+          <FormatAlignLeftIcon
+            className="icon"
+            style={{ marginRight: "8px" }}
+          />
+          <span className="text">Start Align</span>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "end");
+          }}
+          className="item wide"
+        >
+          {/* <i
+            className={`icon ${
+              isRTL
+                ? ELEMENT_FORMAT_OPTIONS.end.iconRTL
+                : ELEMENT_FORMAT_OPTIONS.end.icon
+            }`}
+          /> */}
+          <FormatAlignRightIcon
+            className="icon"
+            style={{ marginRight: "8px" }}
+          />
+          <span className="text">End Align</span>
+        </MenuItem>
+        <Divider />
+        <MenuItem
+          onClick={() => {
+            editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
+          }}
+          className="item wide"
+        >
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className={"icon " + (isRTL ? "indent" : "outdent")} /> */}
+            {isRTL ? (
+              <FormatIndentIncreaseIcon
+                className="icon"
+                style={{ marginRight: "8px" }}
+              />
+            ) : (
+              <FormatIndentDecreaseIcon
+                className="icon"
+                style={{ marginRight: "8px" }}
+              />
+            )}
+            <span className="text">Outdent</span>
+          </div>
+          {/* <span className="shortcut">{SHORTCUTS.OUTDENT}</span> */}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
+          }}
+          className="item wide"
+        >
+          <div className="icon-text-container" style={menuStyle}>
+            {/* <i className={"icon " + (isRTL ? "outdent" : "indent")} /> */}
+            {isRTL ? (
+              <FormatIndentDecreaseIcon
+                className="icon"
+                style={{ marginRight: "8px" }}
+              />
+            ) : (
+              <FormatIndentIncreaseIcon
+                className="icon"
+                style={{ marginRight: "8px" }}
+              />
+            )}
+            <span className="text">Indent</span>
+          </div>
+          {/* <span className="shortcut">{SHORTCUTS.INDENT}</span> */}
+        </MenuItem>
+      </Menu>
+    </StyledDiv>
   );
 }
 
@@ -251,12 +539,8 @@ function InsertDropdown({ disabled, editor, showModal }) {
     setOpen(e.currentTarget);
   }
   return (
-    <Fragment>
-      <Button
-        sx={{ minWidth: "unset", color: "#000" }}
-        onClick={handleClick}
-        disabled={disabled}
-      >
+    <StyledDiv>
+      <Button onClick={handleClick} disabled={disabled}>
         <AddIcon />
       </Button>
       <Menu open={!!isOpen} anchorEl={isOpen} onClose={() => setOpen(false)}>
@@ -267,7 +551,11 @@ function InsertDropdown({ disabled, editor, showModal }) {
           }}
           className="item"
         >
-          <i className="icon horizontal-rule" />
+          {/* <i className="icon horizontal-rule" /> */}
+          <BorderHorizontalIcon
+            className="icon"
+            style={{ marginRight: "8px" }}
+          />
           <span className="text">Horizontal Rule</span>
         </MenuItem>
         {/* <MenuItem
@@ -287,7 +575,8 @@ function InsertDropdown({ disabled, editor, showModal }) {
           }}
           className="item"
         >
-          <i className="icon image" />
+          {/* <i className="icon image" /> */}
+          <ImageIcon className="icon" style={{ marginRight: "8px" }} />
           <span className="text">Image</span>
         </MenuItem>
         <MenuItem
@@ -301,7 +590,8 @@ function InsertDropdown({ disabled, editor, showModal }) {
           }}
           className="item"
         >
-          <i className="icon image" />
+          {/* <i className="icon image" /> */}
+          <ImageIcon className="icon" style={{ marginRight: "8px" }} />
           <span className="text">Inline Image</span>
         </MenuItem>
         {/* <MenuItem
@@ -339,7 +629,8 @@ function InsertDropdown({ disabled, editor, showModal }) {
           }}
           className="item"
         >
-          <i className="icon equation" />
+          {/* <i className="icon equation" /> */}
+          <IsoIcon className="icon" style={{ marginRight: "8px" }} />
           <span className="text">Equation</span>
         </MenuItem>
         {/* <MenuItem
@@ -370,12 +661,8 @@ function InsertDropdown({ disabled, editor, showModal }) {
                   </MenuItem>
                 ))} */}
       </Menu>
-    </Fragment>
+    </StyledDiv>
   );
-}
-
-function Divider() {
-  return <div className="divider" />;
 }
 
 export function FillColumns() {
@@ -666,7 +953,7 @@ export default function ToolbarPlugin({
       >
         <RedoIcon fontSize="inherit" className="format" />
       </button>
-      <Divider />
+      <Divider orientation="vertical" />
       {toolbarState.blockType in blockTypeToBlockName &&
         activeEditor === editor && (
           <>
@@ -902,16 +1189,21 @@ export default function ToolbarPlugin({
                 editor={activeEditor}
                 showModal={showModal}
               />
-              <Divider />
             </>
           )}
+          <ElementFormatDropdown
+            disabled={!isEditable}
+            value={toolbarState.elementFormat}
+            editor={activeEditor}
+            isRTL={toolbarState.isRTL}
+          />
         </>
       )}
-      <Divider />
+      <Divider orientation="vertical" />
       <button
         disabled={!isEditable}
         onClick={isRaw ? md2lx : lx2md}
-        className="toolbar-item spaced "
+        className="toolbar-item spaced"
         aria-label="toggle edit on"
         title={`raw false`}
         type="button"
@@ -922,19 +1214,6 @@ export default function ToolbarPlugin({
           <RawOffIcon fontSize="inherit" className="format" />
         )}
       </button>
-      {/* <button
-        disabled={!isEditable}
-        onClick={md2lx}
-        className={"toolbar-item spaced "}
-        aria-label="toggle edit off"
-        title={`raw true`}
-        type="button"
-      >
-        <EditIcon fontSize="inherit" className="format" />
-      </button>
-      <button onClick={handleCreateTable} className="toolbar-item spaced">
-        <span className="text">Insert Table</span>
-      </button> */}
       {modal}
     </div>
   );
