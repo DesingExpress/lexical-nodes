@@ -356,8 +356,6 @@ function ElementFormatDropdown({ editor, value, isRTL, disabled = false }) {
     setOpen(e.currentTarget);
   }
 
-  console.log(formatOption);
-
   return (
     <StyledDiv>
       <Button
@@ -546,7 +544,6 @@ function InsertDropdown({ disabled, editor, showModal }) {
       <Menu open={!!isOpen} anchorEl={isOpen} onClose={() => setOpen(false)}>
         <MenuItem
           onClick={() => {
-            console.log(editor);
             editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined);
           }}
           className="item"
