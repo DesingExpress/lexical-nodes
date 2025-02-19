@@ -9,6 +9,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   INSERT_TABLE_COMMAND,
+  registerTableSelectionObserver,
   TableCellNode,
   TableNode,
   TableRowNode,
@@ -16,6 +17,12 @@ import {
 import { Button, DialogActions, TextField } from "@mui/material";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import invariant from "../../shared/invariant";
+import {
+  $getSelection,
+  $isRangeSelection,
+  COMMAND_PRIORITY_CRITICAL,
+  SELECTION_CHANGE_COMMAND,
+} from "lexical";
 
 export const CellContext = createContext({
   cellEditorConfig: null,
@@ -100,6 +107,27 @@ export function TableContext({ children }) {
 export function TablePlugin({ cellEditorConfig, children }) {
   const [editor] = useLexicalComposerContext();
   const cellContext = useContext(CellContext);
+
+  useEffect(() => {
+    const unregisterSelectionObserver = registerTableSelectionObserver(editor);
+
+    const unregisterCommand = editor.registerCommand(
+      SELECTION_CHANGE_COMMAND,
+      () => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          console.log("Table selection changed!", selection);
+        }
+        return false;
+      },
+      COMMAND_PRIORITY_CRITICAL
+    );
+
+    return () => {
+      unregisterSelectionObserver();
+      unregisterCommand();
+    };
+  });
 
   useEffect(() => {
     if (!editor.hasNodes([TableNode, TableRowNode, TableCellNode])) {
