@@ -127,6 +127,7 @@ import HMobiledataIcon from "@mui/icons-material/HMobiledata";
 import BorderHorizontalIcon from "@mui/icons-material/BorderHorizontal";
 import ImageIcon from "@mui/icons-material/Image";
 import IsoIcon from "@mui/icons-material/Iso";
+import TitleIcon from "@mui/icons-material/Title";
 
 import {
   $convertFromMarkdownString,
@@ -135,6 +136,7 @@ import {
 import { $getFrontmatter } from "../../utils/getMetaData";
 import { MUT_TRANSFORMERS } from "../MarkdownShortcut";
 import { $createCodeNode, $isCodeNode } from "../CodePlugin/node/CodeBlockNode";
+import FontSize from "./FontSize";
 
 const StyledDiv = styled("div")(({ theme }) => ({
   [`& > .${buttonClasses.root}`]: {
@@ -152,6 +154,29 @@ const menuStyle = {
   justifyContent: "center",
   alignItems: "center",
 };
+
+const FONT_FAMILY_OPTIONS = [
+  ["Arial", "Arial"],
+  ["Courier New", "Courier New"],
+  ["Georgia", "Georgia"],
+  ["Times New Roman", "Times New Roman"],
+  ["Trebuchet MS", "Trebuchet MS"],
+  ["Verdana", "Verdana"],
+];
+
+const FONT_SIZE_OPTIONS = [
+  ["10px", "10px"],
+  ["11px", "11px"],
+  ["12px", "12px"],
+  ["13px", "13px"],
+  ["14px", "14px"],
+  ["15px", "15px"],
+  ["16px", "16px"],
+  ["17px", "17px"],
+  ["18px", "18px"],
+  ["19px", "19px"],
+  ["20px", "20px"],
+];
 
 const ELEMENT_FORMAT_OPTIONS = {
   center: {
@@ -662,6 +687,70 @@ function InsertDropdown({ disabled, editor, showModal }) {
   );
 }
 
+function FontDropDown({ editor, value, style, disabled = false }) {
+  const [isOpen, setOpen] = useState(false);
+
+  function handleClickOpen(e) {
+    setOpen(e.currentTarget);
+  }
+
+  const handleClick = useCallback(
+    (option) => {
+      editor.update(() => {
+        const selection = $getSelection();
+        if (selection !== null) {
+          $patchStyleText(selection, {
+            [style]: option,
+          });
+        }
+      });
+    },
+    [editor, style]
+  );
+
+  const buttonAriaLabel =
+    style === "font-family"
+      ? "Formatting options for font family"
+      : "Formatting options for font size";
+
+  return (
+    <StyledDiv>
+      <Button
+        onClick={handleClickOpen}
+        disabled={disabled}
+        buttonAriaLabel={buttonAriaLabel}
+      >
+        <TitleIcon />
+      </Button>
+      <Menu
+        open={!!isOpen}
+        anchorEl={isOpen}
+        onClose={() => setOpen(false)}
+        buttonClassName={"toolbar-item " + style}
+        buttonLabel={value}
+        buttonIconClassName={
+          style === "font-family" ? "icon block-type font-family" : ""
+        }
+      >
+        {(style === "font-family"
+          ? FONT_FAMILY_OPTIONS
+          : FONT_SIZE_OPTIONS
+        ).map(([option, text]) => (
+          <MenuItem
+            className={`item ${dropDownActiveClass(value === option)} ${
+              style === "font-size" ? "fontsize-item" : ""
+            }`}
+            onClick={() => handleClick(option)}
+            key={option}
+          >
+            <span className="text">{text}</span>
+          </MenuItem>
+        ))}
+      </Menu>
+    </StyledDiv>
+  );
+}
+
 export function FillColumns() {
   const columns = prompt("Enter the number of columns:", "");
 
@@ -960,9 +1049,9 @@ export default function ToolbarPlugin({
               rootType={toolbarState.rootType}
               editor={activeEditor}
             />
-            <Divider />
           </>
         )}
+      <Divider orientation="vertical" />
       {toolbarState.blockType === "code" ? (
         // <Menu
         //   disabled={!isEditable}
@@ -987,6 +1076,19 @@ export default function ToolbarPlugin({
         <div>not supported</div>
       ) : (
         <>
+          <FontDropDown
+            disabled={!isEditable}
+            style={"font-family"}
+            value={toolbarState.fontFamily}
+            editor={activeEditor}
+          />
+          <Divider orientation="vertical" />
+          <FontSize
+            selectionFontSize={toolbarState.fontSize.slice(0, -2)}
+            editor={activeEditor}
+            disabled={!isEditable}
+          />
+          <Divider orientation="vertical" />
           <button
             disabled={!isEditable}
             onClick={() => {
