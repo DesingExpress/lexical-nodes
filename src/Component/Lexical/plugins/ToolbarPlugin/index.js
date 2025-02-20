@@ -364,6 +364,10 @@ function BlockFormatDropDown({
   );
 }
 
+/**
+ * @TODO
+ * Table Cell 선택후 선택한 정렬에 맞게 Markdown에서 Colons(:)이 생성되도록 구현 필요
+ */
 function ElementFormatDropdown({ editor, value, isRTL, disabled = false }) {
   const formatOption = ELEMENT_FORMAT_OPTIONS[value || "left"];
   const [isOpen, setOpen] = useState(false);
@@ -967,8 +971,14 @@ export default function ToolbarPlugin({
   const canViewerSeeInsertDropdown = !toolbarState.isImageCaption;
   const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption;
 
+  /**
+   * @TODO
+   * Markdown으로 작성 후 Colons(:)의 방향에 따라 Table Align 기능 구현 필요
+   * ex) |:---| Left Align / |:---:| Center Align / |---:| Right Align
+   */
   function lx2md() {
     setRaw(true);
+
     editor.update(() => {
       const markdown = $convertToMarkdownString(
         MUT_TRANSFORMERS.current,
