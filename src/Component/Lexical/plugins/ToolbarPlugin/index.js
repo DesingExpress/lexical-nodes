@@ -765,6 +765,15 @@ export function FillColumns() {
   }
 }
 
+/**
+ * @TODO
+ * 1. Insert Link Button 미동작 상태이므로 추후 link 생성기능 구현 필요
+ *
+ * 2. InsertDropdown내에 Image, Inline Image, Equation 기능 미구현상태
+ *
+ * 3. <Menu> 요소의 속성(buttonClassName,buttonLabel,buttonAriaLabel,buttonIconClassNam)
+ *    불필요한 속성 제거 및 className 통일 후 정리 필요
+ */
 export default function ToolbarPlugin({
   editor,
   activeEditor,
