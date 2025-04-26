@@ -8,6 +8,7 @@
 
 import "../style.css";
 import "./index.css";
+import { SelectionAlwaysOnDisplay } from "@lexical/react/LexicalSelectionAlwaysOnDisplay";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -45,18 +46,7 @@ import { SettingsContext, useSettings } from "./context/SettingsContext";
 import TestRawEditor from "./TestRawEditor";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FRONTMATTER } from "./plugins/FrontmatterPlugin/transformer";
-import { TablePlugin } from "./plugins/TablePlugin/TablePlugin";
-import TableCellActionMenuPlugin from "./plugins/TablePlugin/TableActionMenuPlugin";
-import TableHoverActionsPlugin from "./plugins/TablePlugin/TableHoverActionsPlugin";
-import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin";
-// import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
-// import PollPlugin from "./plugins/PollPlugin";
-// import PageBreakPlugin from "./plugins/PageBreakPlugin";
-// import { LayoutPlugin } from "./plugins/LayoutPlugin";
-// import ExcalidrawPlugin from "./plugins/ExcalidrawPlugin";
-// import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
-import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
-import TableCellResizerPlugin from "./plugins/TablePlugin/TableCellResizer";
+import { TableContext, TablePlugin } from "./plugins/TablePlugin/TablePlugin";
 import {
   DEFAULT_TRANSFORMERS,
   MarkdownShortcutPlugin,
@@ -71,6 +61,13 @@ import {
   $convertToMarkdownString,
 } from "#/@lexical/markdown/index.js";
 import { TABLE } from "./plugins/TablePlugin/transformer";
+import useLexicalEditable from "@lexical/react/useLexicalEditable";
+import { CAN_USE_DOM } from "@lexical/utils";
+import TableHoverActionsPlugin from "./plugins/TablePlugin/TableHoverActionPlugin/TableHoverActionsPlugin";
+import TableOfContentsPlugin from "./plugins/TablePlugin/TableOfContentsPlugin/TableOfContentsPlugin";
+import TableActionMenuPlugin from "./plugins/TablePlugin/TableActionMenuPlugin/TableActionMenuPlugin";
+import TableCellResizerPlugin from "./plugins/TablePlugin/TableCellResizer/TableCellResizer";
+
 const placeholder = "Enter some rich text...";
 
 const removeStylesExportDOM = (editor, target) => {
@@ -172,11 +169,14 @@ function Editor({ plugins, shortcuts, editorRef }) {
       tableCellMerge,
       tableCellBackgroundColor,
       tableHorizontalScroll,
+      selectionAlwaysOnDisplay,
     },
   } = useSettings();
-  const { historyState } = useSharedHistoryContext();
 
+  const { historyState } = useSharedHistoryContext();
+  const isEditable = useLexicalEditable();
   const [floatingAnchorElem, setFloatingAnchorElem] = useState(null);
+  const [isSmallWidthViewport, setIsSmallWidthViewport] = useState(false);
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
@@ -187,6 +187,23 @@ function Editor({ plugins, shortcuts, editorRef }) {
       setFloatingAnchorElem(_floatingAnchorElem);
     }
   };
+
+  useEffect(() => {
+    const updateViewPortWidth = () => {
+      const isNextSmallWidthViewport =
+        CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
+
+      if (isNextSmallWidthViewport !== isSmallWidthViewport) {
+        setIsSmallWidthViewport(isNextSmallWidthViewport);
+      }
+    };
+    updateViewPortWidth();
+    window.addEventListener("resize", updateViewPortWidth);
+
+    return () => {
+      window.removeEventListener("resize", updateViewPortWidth);
+    };
+  }, [isSmallWidthViewport]);
 
   useEffect(() => {
     const unregister = registerCommand("toSave", (node) => {
@@ -210,109 +227,99 @@ function Editor({ plugins, shortcuts, editorRef }) {
   }, [registerCommand]);
   return (
     <Fragment>
-      <div className="editor-shell">
-        <ToolbarPlugin
-          editor={editor}
-          activeEditor={activeEditor}
-          setActiveEditor={setActiveEditor}
-          setIsLinkEditMode={setIsLinkEditMode}
-          shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
-        />
-        <div className="editor-container">
-          <AutoFocusPlugin />
-          <HistoryPlugin externalHistoryState={historyState} />
-          {isRichText ? (
-            <div className="editor-inner" tabIndex={-1}>
-              <RichTextPlugin
-                contentEditable={
-                  <div className="editor-scroller">
-                    <div className="editor" ref={onRef}>
-                      <ContentEditable
-                        className={"ContentEditable__root"}
-                        aria-placeholder={placeholder}
-                        placeholder={
-                          <div className={"ContentEditable__placeholder"}>
-                            {placeholder}
-                          </div>
-                        }
-                      />
-                    </div>
+      <ToolbarPlugin
+        editor={editor}
+        activeEditor={activeEditor}
+        setActiveEditor={setActiveEditor}
+        setIsLinkEditMode={setIsLinkEditMode}
+        shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
+      />
+      <div className={`editor-container ${!isRichText ? "plain-text" : ""}`}>
+        <AutoFocusPlugin />
+        {selectionAlwaysOnDisplay && <SelectionAlwaysOnDisplay />}
+        {plugins.map((T) => (
+          <T
+            anchorElem={floatingAnchorElem}
+            editor={editor}
+            activeEditor={activeEditor}
+            externalHistoryState={historyState}
+          />
+        ))}
+        {isRichText ? (
+          <>
+            <HistoryPlugin externalHistoryState={historyState} />
+            <RichTextPlugin
+              contentEditable={
+                <div className="editor-scroller">
+                  <div className="editor" ref={onRef}>
+                    <ContentEditable
+                      className={"ContentEditable__root"}
+                      aria-placeholder={placeholder}
+                      placeholder={
+                        <div className={"ContentEditable__placeholder"}>
+                          {placeholder}
+                        </div>
+                      }
+                    />
                   </div>
-                }
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              <TabIndentationPlugin maxIndent={0} />
-              <TabFocusPlugin />
-              <ListPlugin />
-              <MarkdownShortcutPlugin plugins={shortcuts} />
-              <EquationsPlugin />
-              <HorizontalRulePlugin />
-              <TablePlugin
-                hasCellMerge={tableCellMerge}
-                hasCellBackgroundColor={tableCellBackgroundColor}
-                hasHorizontalScroll={tableHorizontalScroll}
-              />
-              <TableCellResizerPlugin />
-              {/* <AutoEmbedPlugin />
-              <CollapsiblePlugin />
-              <ExcalidrawPlugin />
-              <LayoutPlugin />
-              <PageBreakPlugin />
-              <PollPlugin /> */}
-              {floatingAnchorElem && (
-                <>
-                  <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
-                  {/* <CodeActionMenuPlugin anchorElem={floatingAnchorElem} /> */}
-                  {/* <FloatingLinkEditorPlugin
+                </div>
+              }
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <ListPlugin />
+            <TablePlugin
+              hasCellMerge={tableCellMerge}
+              hasCellBackgroundColor={tableCellBackgroundColor}
+              hasHorizontalScroll={tableHorizontalScroll}
+            />
+            <TableCellResizerPlugin />
+            <EquationsPlugin />
+            <HorizontalRulePlugin />
+            <InlineImagePlugin />
+            <TabFocusPlugin />
+            <TabIndentationPlugin maxIndent={0} />
+            <MarkdownShortcutPlugin plugins={shortcuts} />
+            {floatingAnchorElem && !isSmallWidthViewport && (
+              <>
+                <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+                {/* <CodeActionMenuPlugin anchorElem={floatingAnchorElem} /> */}
+                {/* <FloatingLinkEditorPlugin
                   anchorElem={floatingAnchorElem}
                   isLinkEditMode={isLinkEditMode}
                   setIsLinkEditMode={setIsLinkEditMode}
                 /> */}
-                  <TableCellActionMenuPlugin
-                    anchorElem={floatingAnchorElem}
-                    cellMerge={true}
-                  />
-                  <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
-                  <FloatingTextFormatToolbarPlugin
-                    anchorElem={floatingAnchorElem}
-                    setIsLinkEditMode={setIsLinkEditMode}
-                  />
-                </>
-              )}
-              <InlineImagePlugin />
-              <ImagesPlugin />
-              <EditorRefPlugin editorRef={editorRef} />
-              {plugins.map((T) => (
-                <T
+                <TableActionMenuPlugin
                   anchorElem={floatingAnchorElem}
-                  editor={editor}
-                  activeEditor={activeEditor}
-                  externalHistoryState={historyState}
+                  cellMerge={true}
                 />
-              ))}
-              {/* <SlashMenuPlugin anchorElem={floatingAnchorElem} /> */}
-            </div>
-          ) : (
-            <>
-              <PlainTextPlugin
-                contentEditable={
-                  <ContentEditable
-                    className={"ContentEditable__root plain"}
-                    aria-placeholder={placeholder}
-                    placeholder={
-                      <div className={"ContentEditable__placeholder"}>
-                        {placeholder}
-                      </div>
-                    }
-                  />
-                }
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              <HistoryPlugin externalHistoryState={historyState} />
-            </>
-          )}
-          <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
-        </div>
+                <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
+                <FloatingTextFormatToolbarPlugin
+                  anchorElem={floatingAnchorElem}
+                  setIsLinkEditMode={setIsLinkEditMode}
+                />
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <PlainTextPlugin
+              contentEditable={
+                <ContentEditable
+                  className={"ContentEditable__root plain"}
+                  aria-placeholder={placeholder}
+                  placeholder={
+                    <div className={"ContentEditable__placeholder"}>
+                      {placeholder}
+                    </div>
+                  }
+                />
+              }
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <HistoryPlugin externalHistoryState={historyState} />
+          </>
+        )}
+        <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
       </div>
       <TestRawEditor />
     </Fragment>
@@ -377,16 +384,20 @@ export default function Lexical({
       <SettingsContext>
         <LexicalComposer initialConfig={editorConfig}>
           <LexicalProvider>
-            <div
-              style={{
-                overflow: "hidden auto",
-                height: "100%",
-                width: "100%",
-                position: "relative",
-              }}
-            >
-              <Editor plugins={plugins} shortcuts={_shortcuts} />
-            </div>
+            <TableContext>
+              <ToolbarContext>
+                <div
+                  className="editor-shell"
+                  style={{
+                    overflow: "hidden auto",
+                    height: "100%",
+                    width: "100%",
+                  }}
+                >
+                  <Editor plugins={plugins} shortcuts={_shortcuts} />
+                </div>
+              </ToolbarContext>
+            </TableContext>
           </LexicalProvider>
         </LexicalComposer>
       </SettingsContext>

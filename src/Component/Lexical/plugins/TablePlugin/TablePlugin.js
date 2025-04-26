@@ -8,35 +8,26 @@
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
-  $createTableNodeWithDimensions,
   INSERT_TABLE_COMMAND,
+  registerTableSelectionObserver,
   TableCellNode,
   TableNode,
   TableRowNode,
 } from "@lexical/table";
 import { Button, DialogActions, TextField } from "@mui/material";
-import {
-  $createNodeSelection,
-  $createParagraphNode,
-  $getSelection,
-  $isRangeSelection,
-  $isRootOrShadowRoot,
-  $setSelection,
-  COMMAND_PRIORITY_EDITOR,
-} from "lexical";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import invariant from "../../shared/invariant";
-
-// import Button from "../ui/Button";
-// import { DialogActions } from "../ui/Dialog";
-// import TextInput from "../ui/TextInput";
+import {
+  $getSelection,
+  $isRangeSelection,
+  COMMAND_PRIORITY_CRITICAL,
+  SELECTION_CHANGE_COMMAND,
+} from "lexical";
 
 export const CellContext = createContext({
   cellEditorConfig: null,
   cellEditorPlugins: null,
-  set: () => {
-    // Empty
-  },
+  set: () => {},
 });
 
 export function TableContext({ children }) {
@@ -62,60 +53,81 @@ export function TableContext({ children }) {
   );
 }
 
-export function InsertTableDialog({ activeEditor, onClose }) {
-  const [rows, setRows] = useState("5");
-  const [columns, setColumns] = useState("5");
-  const [isDisabled, setIsDisabled] = useState(true);
+// export function InsertTableDialog({ activeEditor, onClose }) {
+//   const [rows, setRows] = useState("5");
+//   const [columns, setColumns] = useState("5");
+//   const [isDisabled, setIsDisabled] = useState(true);
 
-  useEffect(() => {
-    const row = Number(rows);
-    const column = Number(columns);
-    if (row && row > 0 && row <= 500 && column && column > 0 && column <= 50) {
-      setIsDisabled(false);
-    } else {
-      setIsDisabled(true);
-    }
-  }, [rows, columns]);
+//   useEffect(() => {
+//     const row = Number(rows);
+//     const column = Number(columns);
+//     if (row && row > 0 && row <= 500 && column && column > 0 && column <= 50) {
+//       setIsDisabled(false);
+//     } else {
+//       setIsDisabled(true);
+//     }
+//   }, [rows, columns]);
 
-  const onClick = () => {
-    activeEditor.dispatchCommand(INSERT_TABLE_COMMAND, {
-      columns,
-      rows,
-    });
+//   const onClick = () => {
+//     activeEditor.dispatchCommand(INSERT_TABLE_COMMAND, {
+//       columns,
+//       rows,
+//     });
 
-    onClose();
-  };
+//     onClose();
+//   };
 
-  return (
-    <>
-      <TextField
-        placeholder={"# of rows (1-500)"}
-        label="Rows"
-        onChange={setRows}
-        value={rows}
-        data-test-id="table-modal-rows"
-        type="number"
-      />
-      <TextField
-        placeholder={"# of columns (1-50)"}
-        label="Columns"
-        onChange={setColumns}
-        value={columns}
-        data-test-id="table-modal-columns"
-        type="number"
-      />
-      <DialogActions data-test-id="table-model-confirm-insert">
-        <Button disabled={isDisabled} onClick={onClick}>
-          Confirm
-        </Button>
-      </DialogActions>
-    </>
-  );
-}
+//   return (
+//     <>
+//       <TextField
+//         placeholder={"# of rows (1-500)"}
+//         label="Rows"
+//         onChange={setRows}
+//         value={rows}
+//         data-test-id="table-modal-rows"
+//         type="number"
+//       />
+//       <TextField
+//         placeholder={"# of columns (1-50)"}
+//         label="Columns"
+//         onChange={setColumns}
+//         value={columns}
+//         data-test-id="table-modal-columns"
+//         type="number"
+//       />
+//       <DialogActions data-test-id="table-model-confirm-insert">
+//         <Button disabled={isDisabled} onClick={onClick}>
+//           Confirm
+//         </Button>
+//       </DialogActions>
+//     </>
+//   );
+// }
 
 export function TablePlugin({ cellEditorConfig, children }) {
   const [editor] = useLexicalComposerContext();
   const cellContext = useContext(CellContext);
+
+  useEffect(() => {
+    const unregisterSelectionObserver = registerTableSelectionObserver(editor);
+
+    const unregisterCommand = editor.registerCommand(
+      SELECTION_CHANGE_COMMAND,
+      () => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          console.log("Table selection changed!", selection);
+        }
+        return false;
+      },
+      COMMAND_PRIORITY_CRITICAL
+    );
+
+    return () => {
+      unregisterSelectionObserver();
+      unregisterCommand();
+    };
+  });
 
   useEffect(() => {
     if (!editor.hasNodes([TableNode, TableRowNode, TableCellNode])) {
@@ -131,59 +143,3 @@ export function TablePlugin({ cellEditorConfig, children }) {
   }, [cellContext, cellEditorConfig, children]);
   return null;
 }
-
-// export function TablePlugin({ cellEditorConfig, children }) {
-//   const [editor] = useLexicalComposerContext();
-//   const cellContext = useContext(CellContext);
-
-//   useEffect(() => {
-//     if (!editor.hasNodes([TableNode, TableRowNode, TableCellNode])) {
-//       invariant(
-//         false,
-//         "TablePlugin: TableNode, TableRowNode, or TableCellNode is not registered on editor"
-//       );
-//     }
-//     cellContext.set(cellEditorConfig, children);
-
-//     return editor.registerCommand(
-//       INSERT_TABLE_COMMAND,
-//       ({ columns, rows, includeHeaders }) => {
-//         const selection = $getSelection();
-
-//         if (!$isRangeSelection(selection)) {
-//           return true;
-//         }
-//         const focus = selection.focus;
-//         const focusNode = focus.getNode();
-//         if (focusNode !== null) {
-//           const tableNode = $createTableNodeWithDimensions(
-//             Number(rows),
-//             Number(columns),
-//             includeHeaders
-//           );
-//           if ($isRootOrShadowRoot(focusNode)) {
-//             const target = focusNode.getChildAtIndex(focus.offset);
-
-//             if (target !== null) {
-//               target.insertBefore(tableNode);
-//             } else {
-//               focusNode.append(tableNode);
-//             }
-//             tableNode.insertBefore($createParagraphNode());
-//           } else {
-//             const topLevelNode = focusNode.getTopLevelElementOrThrow();
-//             topLevelNode.insertAfter(tableNode);
-//           }
-//           tableNode.insertAfter($createParagraphNode());
-//           const nodeSelection = $createNodeSelection();
-//           nodeSelection.add(tableNode.getKey());
-//           $setSelection(nodeSelection);
-//         }
-//         return true;
-//       },
-//       COMMAND_PRIORITY_EDITOR
-//     );
-//   }, [cellContext, cellEditorConfig, children, editor]);
-
-//   return null;
-// }

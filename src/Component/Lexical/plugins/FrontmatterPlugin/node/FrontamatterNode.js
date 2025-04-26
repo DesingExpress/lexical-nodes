@@ -67,7 +67,6 @@ export class FrontmatterNode extends DecoratorNode {
         keymap.of(this.codeMirrorKeymap(editor)),
         EditorView.focusChangeEffect.of((_, focusing) => {
           if (focusing) {
-            console.log("aaa");
             editor.update(() => {
               $setSelection(null);
             });

@@ -8,8 +8,6 @@
 
 import {
   AutoEmbedOption,
-  EmbedConfig,
-  EmbedMatchResult,
   LexicalAutoEmbedPlugin,
   URL_MATCHER,
 } from "@lexical/react/LexicalAutoEmbedPlugin";
@@ -21,119 +19,119 @@ import * as ReactDOM from "react-dom";
 import useModal from "../../hooks/useModal";
 // import Button from "../../ui/Button";
 // import { DialogActions } from "../../ui/Dialog";
-import { INSERT_FIGMA_COMMAND } from "../FigmaPlugin";
-import { INSERT_TWEET_COMMAND } from "../TwitterPlugin";
-import { INSERT_YOUTUBE_COMMAND } from "../YouTubePlugin";
+// import { INSERT_FIGMA_COMMAND } from "../FigmaPlugin";
+// import { INSERT_TWEET_COMMAND } from "../TwitterPlugin";
+// import { INSERT_YOUTUBE_COMMAND } from "../YouTubePlugin";
 import { Button, DialogActions } from "@mui/material";
 
-export const YoutubeEmbedConfig = {
-  contentName: "Youtube Video",
+// export const YoutubeEmbedConfig = {
+//   contentName: "Youtube Video",
 
-  exampleUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+//   exampleUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
 
-  // Icon for display.
-  icon: <i className="icon youtube" />,
+//   // Icon for display.
+//   icon: <i className="icon youtube" />,
 
-  insertNode: (editor, result) => {
-    editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id);
-  },
+//   insertNode: (editor, result) => {
+//     editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id);
+//   },
 
-  keywords: ["youtube", "video"],
+//   keywords: ["youtube", "video"],
 
-  // Determine if a given URL is a match and return url data.
-  parseUrl: async (url) => {
-    const match =
-      /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/.exec(url);
+//   // Determine if a given URL is a match and return url data.
+//   parseUrl: async (url) => {
+//     const match =
+//       /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/.exec(url);
 
-    const id = match ? (match?.[2].length === 11 ? match[2] : null) : null;
+//     const id = match ? (match?.[2].length === 11 ? match[2] : null) : null;
 
-    if (id != null) {
-      return {
-        id,
-        url,
-      };
-    }
+//     if (id != null) {
+//       return {
+//         id,
+//         url,
+//       };
+//     }
 
-    return null;
-  },
+//     return null;
+//   },
 
-  type: "youtube-video",
-};
+//   type: "youtube-video",
+// };
 
-export const TwitterEmbedConfig = {
-  // e.g. Tweet or Google Map.
-  contentName: "Tweet",
+// export const TwitterEmbedConfig = {
+//   // e.g. Tweet or Google Map.
+//   contentName: "Tweet",
 
-  exampleUrl: "https://twitter.com/jack/status/20",
+//   exampleUrl: "https://twitter.com/jack/status/20",
 
-  // Icon for display.
-  icon: <i className="icon tweet" />,
+//   // Icon for display.
+//   icon: <i className="icon tweet" />,
 
-  // Create the Lexical embed node from the url data.
-  insertNode: (editor, result) => {
-    editor.dispatchCommand(INSERT_TWEET_COMMAND, result.id);
-  },
+//   // Create the Lexical embed node from the url data.
+//   insertNode: (editor, result) => {
+//     editor.dispatchCommand(INSERT_TWEET_COMMAND, result.id);
+//   },
 
-  // For extra searching.
-  keywords: ["tweet", "twitter"],
+//   // For extra searching.
+//   keywords: ["tweet", "twitter"],
 
-  // Determine if a given URL is a match and return url data.
-  parseUrl: (text) => {
-    const match =
-      /^https:\/\/(twitter|x)\.com\/(#!\/)?(\w+)\/status(es)*\/(\d+)/.exec(
-        text
-      );
+//   // Determine if a given URL is a match and return url data.
+//   parseUrl: (text) => {
+//     const match =
+//       /^https:\/\/(twitter|x)\.com\/(#!\/)?(\w+)\/status(es)*\/(\d+)/.exec(
+//         text
+//       );
 
-    if (match != null) {
-      return {
-        id: match[5],
-        url: match[1],
-      };
-    }
+//     if (match != null) {
+//       return {
+//         id: match[5],
+//         url: match[1],
+//       };
+//     }
 
-    return null;
-  },
+//     return null;
+//   },
 
-  type: "tweet",
-};
+//   type: "tweet",
+// };
 
-export const FigmaEmbedConfig = {
-  contentName: "Figma Document",
+// export const FigmaEmbedConfig = {
+//   contentName: "Figma Document",
 
-  exampleUrl: "https://www.figma.com/file/LKQ4FJ4bTnCSjedbRpk931/Sample-File",
+//   exampleUrl: "https://www.figma.com/file/LKQ4FJ4bTnCSjedbRpk931/Sample-File",
 
-  icon: <i className="icon figma" />,
+//   icon: <i className="icon figma" />,
 
-  insertNode: (editor, result) => {
-    editor.dispatchCommand(INSERT_FIGMA_COMMAND, result.id);
-  },
+//   insertNode: (editor, result) => {
+//     editor.dispatchCommand(INSERT_FIGMA_COMMAND, result.id);
+//   },
 
-  keywords: ["figma", "figma.com", "mock-up"],
+//   keywords: ["figma", "figma.com", "mock-up"],
 
-  // Determine if a given URL is a match and return url data.
-  parseUrl: (text) => {
-    const match =
-      /https:\/\/([\w.-]+\.)?figma.com\/(file|proto)\/([0-9a-zA-Z]{22,128})(?:\/.*)?$/.exec(
-        text
-      );
+//   // Determine if a given URL is a match and return url data.
+//   parseUrl: (text) => {
+//     const match =
+//       /https:\/\/([\w.-]+\.)?figma.com\/(file|proto)\/([0-9a-zA-Z]{22,128})(?:\/.*)?$/.exec(
+//         text
+//       );
 
-    if (match != null) {
-      return {
-        id: match[3],
-        url: match[0],
-      };
-    }
+//     if (match != null) {
+//       return {
+//         id: match[3],
+//         url: match[0],
+//       };
+//     }
 
-    return null;
-  },
+//     return null;
+//   },
 
-  type: "figma",
-};
+//   type: "figma",
+// };
 
 export const EmbedConfigs = [
-  TwitterEmbedConfig,
-  YoutubeEmbedConfig,
-  FigmaEmbedConfig,
+  // TwitterEmbedConfig,
+  // YoutubeEmbedConfig,
+  // FigmaEmbedConfig,
 ];
 
 function AutoEmbedMenuItem({
@@ -201,8 +199,7 @@ const debounce = (callback, delay) => {
 export function AutoEmbedDialog({ embedConfig, onClose }) {
   const [text, setText] = useState("");
   const [editor] = useLexicalComposerContext();
-  const [embedResult, setEmbedResult] =
-    (useState < EmbedMatchResult) | (null > null);
+  const [embedResult, setEmbedResult] = useState(null);
 
   const validateText = useMemo(
     () =>

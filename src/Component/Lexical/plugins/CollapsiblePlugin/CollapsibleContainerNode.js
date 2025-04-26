@@ -6,21 +6,9 @@
  *
  */
 
-import {
-  DOMConversionMap,
-  DOMConversionOutput,
-  DOMExportOutput,
-  EditorConfig,
-  ElementNode,
-  isHTMLElement,
-  LexicalEditor,
-  LexicalNode,
-  NodeKey,
-  SerializedElementNode,
-  Spread,
-} from "lexical";
-import { IS_CHROME } from "shared/environment";
-import invariant from "shared/invariant";
+import { ElementNode, isHTMLElement } from "lexical";
+import { IS_CHROME } from "../../shared/environment";
+import invariant from "../../shared/invariant";
 
 import { setDomHiddenUntilFound } from "./CollapsibleUtils";
 

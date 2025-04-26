@@ -29,6 +29,17 @@ import { getDOMRangeRect } from "../../utils/getDOMRangeRect";
 import { getSelectedNode } from "../../utils/getSelectedNode";
 import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
 
+import FormatBoldIcon from "@mui/icons-material/FormatBold";
+import FormatItalicIcon from "@mui/icons-material/FormatItalic";
+import FormatUnderlinedIcon from "@mui/icons-material/FormatUnderlined";
+import FormatStrikethroughIcon from "@mui/icons-material/FormatStrikethrough";
+import SubscriptIcon from "@mui/icons-material/Subscript";
+import SuperscriptIcon from "@mui/icons-material/Superscript";
+import TextFieldsIcon from "@mui/icons-material/TextFields";
+import AbcIcon from "@mui/icons-material/Abc";
+import CodeIcon from "@mui/icons-material/Code";
+import LinkIcon from "@mui/icons-material/Link";
+
 function TextFormatFloatingToolbar({
   editor,
   anchorElem,
@@ -180,7 +191,8 @@ function TextFormatFloatingToolbar({
             title="Bold"
             aria-label="Format text as bold"
           >
-            <i className="format bold" />
+            {/* <i className="format bold" crossOrigin="anonymous" /> */}
+            <FormatBoldIcon className="format bold" />
           </button>
           <button
             type="button"
@@ -191,7 +203,8 @@ function TextFormatFloatingToolbar({
             title="Italic"
             aria-label="Format text as italics"
           >
-            <i className="format italic" />
+            {/* <i className="format italic" /> */}
+            <FormatItalicIcon className="format italic" />
           </button>
           <button
             type="button"
@@ -202,7 +215,8 @@ function TextFormatFloatingToolbar({
             title="Underline"
             aria-label="Format text to underlined"
           >
-            <i className="format underline" />
+            {/* <i className="format underline" /> */}
+            <FormatUnderlinedIcon className="format underline" />
           </button>
           <button
             type="button"
@@ -213,7 +227,8 @@ function TextFormatFloatingToolbar({
             title="Strikethrough"
             aria-label="Format text with a strikethrough"
           >
-            <i className="format strikethrough" />
+            {/* <i className="format strikethrough" /> */}
+            <FormatStrikethroughIcon className="format strikethrough" />
           </button>
           <button
             type="button"
@@ -224,7 +239,8 @@ function TextFormatFloatingToolbar({
             title="Subscript"
             aria-label="Format Subscript"
           >
-            <i className="format subscript" />
+            {/* <i className="format subscript" /> */}
+            <SubscriptIcon className="format subscript" />
           </button>
           <button
             type="button"
@@ -235,7 +251,8 @@ function TextFormatFloatingToolbar({
             title="Superscript"
             aria-label="Format Superscript"
           >
-            <i className="format superscript" />
+            {/* <i className="format superscript" /> */}
+            <SuperscriptIcon className="format superscript" />
           </button>
           <button
             type="button"
@@ -246,7 +263,8 @@ function TextFormatFloatingToolbar({
             title="Uppercase"
             aria-label="Format text to uppercase"
           >
-            <i className="format uppercase" />
+            {/* <i className="format uppercase" /> */}
+            <AbcIcon className="format uppercase" />
           </button>
           <button
             type="button"
@@ -257,7 +275,8 @@ function TextFormatFloatingToolbar({
             title="Lowercase"
             aria-label="Format text to lowercase"
           >
-            <i className="format lowercase" />
+            {/* <i className="format lowercase" /> */}
+            <AbcIcon className="format lowercase" />
           </button>
           <button
             type="button"
@@ -268,7 +287,8 @@ function TextFormatFloatingToolbar({
             title="Capitalize"
             aria-label="Format text to capitalize"
           >
-            <i className="format capitalize" />
+            {/* <i className="format capitalize" /> */}
+            <TextFieldsIcon className="format capitalize" />
           </button>
           <button
             type="button"
@@ -279,7 +299,8 @@ function TextFormatFloatingToolbar({
             title="Insert code block"
             aria-label="Insert code block"
           >
-            <i className="format code" />
+            {/* <i className="format code" /> */}
+            <CodeIcon className="format code" />
           </button>
           <button
             type="button"
@@ -288,7 +309,8 @@ function TextFormatFloatingToolbar({
             title="Insert link"
             aria-label="Insert link"
           >
-            <i className="format link" />
+            {/* <i className="format link" /> */}
+            <LinkIcon className="format link" />
           </button>
         </>
       )}

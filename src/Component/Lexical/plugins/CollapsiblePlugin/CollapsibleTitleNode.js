@@ -6,20 +6,9 @@
  *
  */
 
-import {
-  $createParagraphNode,
-  $isElementNode,
-  DOMConversionMap,
-  DOMConversionOutput,
-  EditorConfig,
-  ElementNode,
-  LexicalEditor,
-  LexicalNode,
-  RangeSelection,
-  SerializedElementNode,
-} from "lexical";
-import { IS_CHROME } from "shared/environment";
-import invariant from "shared/invariant";
+import { $createParagraphNode, $isElementNode, ElementNode } from "lexical";
+import { IS_CHROME } from "../../shared/environment";
+import invariant from "../../shared/invariant";
 
 import { $isCollapsibleContainerNode } from "./CollapsibleContainerNode";
 import { $isCollapsibleContentNode } from "./CollapsibleContentNode";

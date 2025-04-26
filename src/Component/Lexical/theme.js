@@ -6,7 +6,9 @@
  *
  */
 
-const lexicalTheme= {
+import "./theme.css";
+
+const lexicalTheme = {
   code: "editor-code",
   heading: {
     h1: "editor-heading-h1",
@@ -30,6 +32,22 @@ const lexicalTheme= {
   placeholder: "editor-placeholder",
   quote: "editor-quote",
   rtl: "rtl",
+  table: "PlaygroundEditorTheme__table",
+  tableAlignment: {
+    center: "PlaygroundEditorTheme__tableAlignmentCenter",
+    right: "PlaygroundEditorTheme__tableAlignmentRight",
+  },
+  tableCell: "PlaygroundEditorTheme__tableCell",
+  tableCellActionButton: "PlaygroundEditorTheme__tableCellActionButton",
+  tableCellActionButtonContainer:
+    "PlaygroundEditorTheme__tableCellActionButtonContainer",
+  tableCellHeader: "PlaygroundEditorTheme__tableCellHeader",
+  tableCellResizer: "PlaygroundEditorTheme__tableCellResizer",
+  tableCellSelected: "PlaygroundEditorTheme__tableCellSelected",
+  tableRowStriping: "PlaygroundEditorTheme__tableRowStriping",
+  tableScrollableWrapper: "PlaygroundEditorTheme__tableScrollableWrapper",
+  tableSelected: "PlaygroundEditorTheme__tableSelected",
+  tableSelection: "PlaygroundEditorTheme__tableSelection",
   text: {
     bold: "editor-text-bold",
     code: "editor-text-code",
@@ -41,4 +59,4 @@ const lexicalTheme= {
     underlineStrikethrough: "editor-text-underlineStrikethrough",
   },
 };
-export default lexicalTheme
+export default lexicalTheme;

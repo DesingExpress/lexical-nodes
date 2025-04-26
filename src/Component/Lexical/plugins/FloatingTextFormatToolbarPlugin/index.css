@@ -19,7 +19,7 @@
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   transition: opacity 0.5s;
-  height: 35px;
+  height: 36px !important;
   will-change: transform;
 }
 
@@ -28,7 +28,7 @@
   display: flex;
   background: none;
   border-radius: 10px;
-  padding: 8px;
+  padding: 6px !important;
   cursor: pointer;
   vertical-align: middle;
 }
@@ -41,7 +41,17 @@
   margin-right: 2px;
 }
 
-.floating-text-format-popup button.popup-item i.format {
+.floating-text-format-popup button.popup-item svg.format {
+  background-size: contain;
+  height: 18px;
+  width: 18px;
+  /* margin-top: 2px; */
+  vertical-align: -0.25em;
+  display: flex;
+  opacity: 0.6;
+}
+
+/* .floating-text-format-popup button.popup-item i.format {
   background-size: contain;
   height: 18px;
   width: 18px;
@@ -49,7 +59,7 @@
   vertical-align: -0.25em;
   display: flex;
   opacity: 0.6;
-}
+} */
 
 .floating-text-format-popup button.popup-item:disabled i.format {
   opacity: 0.2;

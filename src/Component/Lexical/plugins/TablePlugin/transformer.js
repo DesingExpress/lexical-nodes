@@ -23,12 +23,6 @@ import {
   TableRowNode,
 } from "@lexical/table";
 import { $isParagraphNode, $isTextNode } from "lexical";
-
-// import {
-//   $createTweetNode,
-//   $isTweetNode,
-//   TweetNode,
-// } from "../../nodes/TweetNode";
 import { MUT_TRANSFORMERS } from "../MarkdownShortcut";
 
 // Very primitive table setup
@@ -76,7 +70,6 @@ export const TABLE = {
   },
   regExp: TABLE_ROW_REG_EXP,
   replace: (parentNode, _1, match) => {
-    console.log("AASASASS");
     // Header row
     if (TABLE_ROW_DIVIDER_REG_EXP.test(match[0])) {
       const table = parentNode.getPreviousSibling();

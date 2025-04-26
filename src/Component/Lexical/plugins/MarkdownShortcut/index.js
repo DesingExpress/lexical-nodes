@@ -1,12 +1,11 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-
-// import { registerMarkdownShortcuts } from "../markdown/MarkdownShortcuts.js";
 import { registerMarkdownShortcuts } from "#/@lexical/markdown/MarkdownShortcuts.js";
-// import { TRANSFORMERS } from "../markdown/index.js";
 import {
   ELEMENT_TRANSFORMERS,
+  MULTILINE_ELEMENT_TRANSFORMERS,
   TEXT_FORMAT_TRANSFORMERS,
   TEXT_MATCH_TRANSFORMERS,
+  TRANSFORMERS,
 } from "#/@lexical/markdown/index.js";
 
 import {
@@ -15,6 +14,7 @@ import {
   HorizontalRuleNode,
 } from "@lexical/react/LexicalHorizontalRuleNode";
 import { createRef, useEffect } from "react";
+import { TABLE } from "../TablePlugin/transformer";
 
 const HR = {
   dependencies: [HorizontalRuleNode],
@@ -38,14 +38,19 @@ const HR = {
 };
 
 export const DEFAULT_TRANSFORMERS = [
+  TABLE,
   HR,
+  ...TRANSFORMERS,
   ...ELEMENT_TRANSFORMERS,
-  // ...MULTILINE_ELEMENT_TRANSFORMERS,
+  ...MULTILINE_ELEMENT_TRANSFORMERS,
   ...TEXT_FORMAT_TRANSFORMERS,
   ...TEXT_MATCH_TRANSFORMERS,
 ];
 
-export const MarkdownShortcutPlugin = ({ plugins = [] }) => {
+export const MarkdownShortcutPlugin = ({
+  plugins = [],
+  transformers = DEFAULT_TRANSFORMERS,
+}) => {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {

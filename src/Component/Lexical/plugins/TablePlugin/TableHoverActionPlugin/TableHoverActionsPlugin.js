@@ -16,19 +16,19 @@ import {
   $isTableCellNode,
   $isTableNode,
   getTableElement,
-  TableCellNode,
   TableNode,
-  TableRowNode,
 } from "@lexical/table";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
-import { $getNearestNodeFromDOMNode, isHTMLElement, NodeKey } from "lexical";
+import { $getNearestNodeFromDOMNode, isHTMLElement } from "lexical";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as React from "react";
 import { createPortal } from "react-dom";
 
-import { useDebounce } from "../../hooks/useDebounce";
+import { useDebounce } from "src/Component/Lexical/hooks/useDebounce";
 
-const BUTTON_WIDTH_PX = 20;
+import AddIcon from "@mui/icons-material/Add";
+
+const BUTTON_WIDTH_PX = 33;
 
 function TableHoverActionsContainer({ anchorElem }) {
   const [editor] = useLexicalComposerContext();
@@ -248,14 +248,18 @@ function TableHoverActionsContainer({ anchorElem }) {
           className={"PlaygroundEditorTheme__tableAddRows"}
           style={{ ...position }}
           onClick={() => insertAction(true)}
-        />
+        >
+          <AddIcon style={{ opacity: 0.4, width: "18px", height: "18px" }} />
+        </button>
       )}
       {isShownColumn && (
         <button
           className={"PlaygroundEditorTheme__tableAddColumns"}
           style={{ ...position }}
           onClick={() => insertAction(false)}
-        />
+        >
+          <AddIcon style={{ opacity: 0.4, width: "18px", height: "18px" }} />
+        </button>
       )}
     </>
   );
@@ -263,7 +267,6 @@ function TableHoverActionsContainer({ anchorElem }) {
 
 function getMouseInfo(event) {
   const target = event.target;
-
   if (isHTMLElement(target)) {
     const tableDOMNode = target.closest(
       "td.PlaygroundEditorTheme__tableCell, th.PlaygroundEditorTheme__tableCell"
