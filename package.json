@@ -32,7 +32,8 @@
   "scripts": {
     "start": "node-scripts start",
     "start:tsc": "tsc-watch --onSuccess \"node-scripts start\"",
-    "build": "tsc -p .&&node-scripts build",
+    "build:tsc": "tsc -p .",
+    "build": "node-scripts build",
     "pack": "node-scripts pack",
     "publish": "node-scripts publish",
     "docs": "node-scripts docs",
