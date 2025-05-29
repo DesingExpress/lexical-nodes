@@ -93,6 +93,7 @@ export default function ToolbarPlugin() {
     );
   }, [editor, $updateToolbar]);
 
+  // Check toolbar icon normal output
   return (
     <Paper className="toolbar" ref={toolbarRef}>
       <IconButton
