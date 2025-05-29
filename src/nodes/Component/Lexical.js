@@ -124,6 +124,7 @@ const editorConfig = {
   theme: lexicalTheme,
 };
 
+// Need to check actual classname match
 export default function Editor() {
   return (
     <LexicalComposer initialConfig={editorConfig}>
